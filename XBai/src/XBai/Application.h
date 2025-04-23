@@ -1,7 +1,12 @@
-#ifndef XBAI_APPLICATION
+ï»¿#ifndef XBAI_APPLICATION
 #define XBAI_APPLICATION
 
+#include "xbpch.h"
 #include "Core.h"
+#include "Window.h"
+#include "LayerStack.h"
+#include "Events/Event.h"
+#include "Events/ApplicationEvent.h"
 
 namespace XBai
 {
@@ -9,10 +14,30 @@ namespace XBai
 	{
 	public :
 		Application();
-		//Îö¹¹º¯Êı±»ÉùÃ÷ÎªĞéº¯Êı£¬¿ÉÒÔ°ïÖú×ÓÀàÕıÈ·ÊÍ·Å×ÊÔ´
+		//ææ„å‡½æ•°è¢«å£°æ˜ä¸ºè™šå‡½æ•°ï¼Œå¯ä»¥å¸®åŠ©å­ç±»æ­£ç¡®é‡Šæ”¾èµ„æº
 		virtual ~Application();
 
 		void run();
+
+		void OnEvent(Event& e);
+
+		void PushLayer(Layer* layer);
+
+		void PushOverlay(Layer* layer);
+
+		inline static Application& Get() { return *s_Instance; }
+
+		inline Window& GetWindow() { return *m_Window; }
+
+	private:
+		bool OnWindowClose(WindowCloseEvent& e);
+		std::unique_ptr<Window> m_Window;
+		bool m_Running = true;
+
+		LayerStack m_LayerStack;
+
+	private:
+		static Application* s_Instance;
 	};
 
 	Application* CreateApplication();

@@ -1,0 +1,9 @@
+[submodule "XBai/vendor/spdlog"]
+	path = XBai/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "XBai/vendor/GLFW"]
+	path = XBai/vendor/GLFW
+	url = https://github.com/glfw/glfw
+[submodule "XBai/vendor/imgui"]
+	path = XBai/vendor/imgui
+	url = https://github.com/ocornut/imgui

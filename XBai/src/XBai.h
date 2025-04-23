@@ -1,10 +1,14 @@
-#ifndef XBAI
+ï»¿#ifndef XBAI
 #define XBAI
 
-#include <stdio.h>
+//#include "xbpch.h"
 //For used by application
 #include "XBai/Application.h"
-//Èë¿Úµã
+#include "XBai/Layer.h"
+#include "XBai/Log.h"
+
+#include "XBai/ImGui/ImGuiLayer.h"
+//å…¥å£ç‚¹
 #include "XBai/EntryPoint.h"
 
 #endif
