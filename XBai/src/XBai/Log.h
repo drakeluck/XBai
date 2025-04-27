@@ -38,4 +38,3 @@ namespace XBai
 #define XB_CRITICAL(...)	::XBai::Log::GetClientLogger()->critical(__VA_ARGS__)
 
 #endif
-

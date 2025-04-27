@@ -14,6 +14,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "XBai/vendor/GLFW/include"
 IncludeDir["Glad"] = "XBai/vendor/Glad/include"
 IncludeDir["ImGui"] = "XBai/vendor/imgui"
+IncludeDir["glm"] = "XBai/vendor/glm"
 
 include "XBai/vendor/GLFW"
 include "XBai/vendor/Glad"
@@ -21,8 +22,10 @@ include "XBai/vendor/imgui"
 
 project "XBai"
 	location "XBai"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "On"
 
 	targetdir ("bin/"..outputdir.."/%{prj.name}")
 	objdir ("bin-int/"..outputdir.."/%{prj.name}")
@@ -34,7 +37,14 @@ project "XBai"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
+	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs
@@ -43,7 +53,8 @@ project "XBai"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links 
@@ -55,40 +66,36 @@ project "XBai"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
-		systemversion "latest"
 		
+		systemversion "latest"
 		defines
 		{
 			"XB_PLATFORM_WINDOWS",
-			"XB_BUILD_DLL"
-		}
-
-		postbuildcommands
-		{
-			("{COPYFILE} %{cfg.buildtarget.relpath} ../bin/"..outputdir.."/SandBox")
+			"XB_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
 		defines "XB_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "XB_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "XB_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 project "SandBox"
 	location "SandBox"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "On"
 
 	targetdir ("bin/"..outputdir.."/%{prj.name}")
 	objdir ("bin-int/"..outputdir.."/%{prj.name}")
@@ -103,7 +110,9 @@ project "SandBox"
 	includedirs
 	{
 		"XBai/vendor/spdlog/include",
-		"XBai/src"
+		"XBai/src",
+		"XBai/vendor",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -112,10 +121,8 @@ project "SandBox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
-		systemversion "latest"
 		
+		systemversion "latest"
 		defines
 		{
 			"XB_PLATFORM_WINDOWS"
@@ -123,15 +130,15 @@ project "SandBox"
 
 	filter "configurations:Debug"
 		defines "XB_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "XB_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "XB_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"

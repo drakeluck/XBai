@@ -7,3 +7,6 @@
 [submodule "XBai/vendor/imgui"]
 	path = XBai/vendor/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "XBai/vendor/glm"]
+	path = XBai/vendor/glm
+	url = https://github.com/g-truc/glm

@@ -1,12 +1,18 @@
-﻿#ifndef XBAI_APPLICATION
-#define XBAI_APPLICATION
+﻿#ifndef XBAI_APPLICATION_H
+#define XBAI_APPLICATION_H
 
-#include "xbpch.h"
 #include "Core.h"
+
 #include "Window.h"
 #include "LayerStack.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+
+#include "XBai/ImGui/ImGuiLayer.h"
+
+#include "Render/Shader.h"
+#include "Render/Buffer.h"
+#include "Render/VertexArray.h"
 
 namespace XBai
 {
@@ -32,9 +38,19 @@ namespace XBai
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 
 		LayerStack m_LayerStack;
+
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+		std::shared_ptr<VertexArray> m_VertexArray;
+
+
+		std::shared_ptr<Shader> m_BlueShader;
+		std::shared_ptr<VertexArray> m_SquareVA;
 
 	private:
 		static Application* s_Instance;

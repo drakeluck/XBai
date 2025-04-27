@@ -4,6 +4,8 @@
 #include "XBai/Events/KeyEvent.h"
 #include "XBai/Events/ApplicationEvent.h"
 
+#include "Platform/OpenGL/OpenGLContext.h"
+
 namespace XBai
 {
 	static bool s_GLFWInitialized = false;
@@ -45,10 +47,9 @@ namespace XBai
 		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
 
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		XB_CORE_ASSERT(status, "Failed to Init Glad!")
 		//将任意类型数据的指针关联到窗口对象上，方面后续回调函数时调用
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		setVSync(true);
@@ -146,7 +147,7 @@ namespace XBai
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::setVSync(bool enable)
