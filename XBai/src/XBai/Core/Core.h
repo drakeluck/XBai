@@ -1,5 +1,7 @@
 ﻿#ifndef XBAI_CORE_H
 #define XBAI_CORE_H
+
+#include <memory>
 	
 	#ifdef XB_PLATFORM_WINDOWS
 		#ifdef XB_ENABLE_DYNAMIC_DLL
@@ -29,6 +31,15 @@
 
 	#define BIT(x) (1 << x)
 	#define XB_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+namespace XBai
+{
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+}
 
 #endif
 

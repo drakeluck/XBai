@@ -15,6 +15,7 @@ IncludeDir["GLFW"] = "XBai/vendor/GLFW/include"
 IncludeDir["Glad"] = "XBai/vendor/Glad/include"
 IncludeDir["ImGui"] = "XBai/vendor/imgui"
 IncludeDir["glm"] = "XBai/vendor/glm"
+IncludeDir["stb_image"] = "XBai/vendor/stb_image"
 
 include "XBai/vendor/GLFW"
 include "XBai/vendor/Glad"
@@ -38,6 +39,8 @@ project "XBai"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
@@ -54,7 +57,8 @@ project "XBai"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links 

@@ -1,10 +1,8 @@
 ﻿#ifndef WINDOWS_WINDOW_H
 #define WINDOWS_WINDOW_H
 
-#include "XBai/Window.h"
-#include "XBai/Log.h"
+#include "XBai/Core/Window.h"
 #include "XBai/Render/GraphicsContext.h"
-//#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 namespace XBai

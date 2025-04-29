@@ -1,8 +1,9 @@
 ﻿#ifndef XBAI_LAYER_H
 #define XBAI_LAYER_H
 
-#include "XBai/Core.h"
+#include "XBai/Core/Core.h"
 #include "XBai/Events/Event.h"
+#include "XBai/Core/TimeStep.h"
 
 namespace XBai
 {
@@ -13,7 +14,7 @@ namespace XBai
 		virtual ~Layer();
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(TimeStep timestep) {}
 		virtual void OnImGuiRender(){}
 		virtual void OnEvent(Event& e) {}
 		virtual void Begin(){}

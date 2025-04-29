@@ -1,7 +1,7 @@
 ﻿#ifndef XB_IMGUILAYER_H
 #define XB_IMGUILAYER_H
 
-#include "XBai/Layer.h"
+#include "XBai/Core/Layer.h"
 #include "XBai/Events/KeyEvent.h"
 #include "XBai/Events/MouseEvent.h"
 #include "XBai/Events/ApplicationEvent.h"

@@ -138,11 +138,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\SandApp.cpp" />
+    <ClCompile Include="src\Sandbox2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XBai\XBai.vcxproj">
       <Project>{89768E7C-75AD-8F0D-1E9A-75100AB00B0F}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Sandbox2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

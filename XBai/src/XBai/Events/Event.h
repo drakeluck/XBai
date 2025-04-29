@@ -2,7 +2,7 @@
 #define XB_EVENT
 
 #include "xbpch.h"
-#include "XBai/Core.h"
+#include "XBai/Core/Core.h"
 
 namespace XBai
 {

@@ -1,7 +1,7 @@
 #ifndef XB_LAYERSTACK_H
 #define XB_LAYERSTACK_H
 
-#include "XBai/Core.h"
+#include "XBai/Core/Core.h"
 #include "Layer.h"
 
 namespace XBai

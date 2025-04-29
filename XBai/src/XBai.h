@@ -1,18 +1,31 @@
-﻿#ifndef XBAI
-#define XBAI
+﻿#ifndef XBAI_H
+#define XBAI_H
 
 //For used by application
-#include "XBai/Application.h"
-#include "XBai/Input.h"
-#include "XBai/KeyCodes.h"
-#include "XBai/MouseButtonCodes.h"
-#include "XBai/Layer.h"
-#include "XBai/Log.h"
+#include "XBai/Core/Application.h"
+#include "XBai/Core/Layer.h"
+#include "XBai/Core/Log.h"
 
+#include "XBai/Core/TimeStep.h"
+
+#include "XBai/Core/Input.h"
+#include "XBai/Core/KeyCodes.h"
+#include "XBai/Core/MouseButtonCodes.h"
+#include "XBai/Render/OrthographicCameraController.h"
 
 #include "XBai/ImGui/ImGuiLayer.h"
-//入口点
-#include "XBai/EntryPoint.h"
+
+//-----------↓↓Renderer↓↓---------------
+#include "XBai/Render/Renderer.h"
+#include "XBai/Render/RenderCommend.h"
+
+#include "XBai/Render/Buffer.h"
+#include "XBai/Render/Shader.h"
+#include "XBai/Render/Texture.h"
+#include "XBai/Render/VertexArray.h"
+
+#include "XBai/Render/OrthographicCamera.h"
+//-----------↑↑Renderer↑↑---------------
 
 #endif
 

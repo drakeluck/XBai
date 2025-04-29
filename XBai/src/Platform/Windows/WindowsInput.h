@@ -1,7 +1,7 @@
 #ifndef XB_WINDOWS_INPUT_H
 #define XB_WINDOWS_INPUT_H
 
-#include "XBai/Input.h"
+#include "XBai/Core/Input.h"
 
 namespace XBai
 {

@@ -1,8 +1,6 @@
 #ifndef XB_GRAPHICS_CONTEXT_H
 #define XB_GRAPHICS_CONTEXT_H
 
-#include "XBai/Core.h"
-
 namespace XBai
 {
 	class GraphicsContext
@@ -12,8 +10,6 @@ namespace XBai
 		virtual void SwapBuffers() = 0;
 	};
 
-
 }
-
 
 #endif

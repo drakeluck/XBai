@@ -3,7 +3,7 @@
 
 #include "xbpch.h"
 
-#include "XBai/Core.h"
+#include "XBai/Core/Core.h"
 #include "XBai/Events/Event.h"
 
 namespace XBai

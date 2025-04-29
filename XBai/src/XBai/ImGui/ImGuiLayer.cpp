@@ -5,10 +5,9 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "XBai/Application.h"
+#include "XBai/Core/Application.h"
 
 //临时的
-//#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
 namespace XBai

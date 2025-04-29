@@ -1,7 +1,7 @@
 #include "xbpch.h"
 #include "WindowsInput.h"
 
-#include "XBai/Application.h"
+#include "XBai/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace XBai
