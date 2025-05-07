@@ -19,6 +19,9 @@
     <Filter Include="src\XBai\Core">
       <UniqueIdentifier>{587ACE48-C43A-4A7F-8D75-93FCF9F48E5B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\XBai\Debug">
+      <UniqueIdentifier>{7620AA62-62EE-9D68-4B82-0E8F37EF79CD}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\XBai\Events">
       <UniqueIdentifier>{E48178BB-500D-E67F-591E-6974C5284280}</UniqueIdentifier>
     </Filter>
@@ -60,6 +63,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFrameBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -71,9 +77,6 @@
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
-      <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>src\Platform\Windows</Filter>
@@ -114,6 +117,9 @@
     <ClInclude Include="src\XBai\Core\Window.h">
       <Filter>src\XBai\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\XBai\Debug\Instrumentor.h">
+      <Filter>src\XBai\Debug</Filter>
+    </ClInclude>
     <ClInclude Include="src\XBai\Events\ApplicationEvent.h">
       <Filter>src\XBai\Events</Filter>
     </ClInclude>
@@ -132,6 +138,9 @@
     <ClInclude Include="src\XBai\Render\Buffer.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
+    <ClInclude Include="src\XBai\Render\FrameBuffer.h">
+      <Filter>src\XBai\Render</Filter>
+    </ClInclude>
     <ClInclude Include="src\XBai\Render\GraphicsContext.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
@@ -141,16 +150,22 @@
     <ClInclude Include="src\XBai\Render\OrthographicCameraController.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
-    <ClInclude Include="src\XBai\Render\RenderCommend.h">
+    <ClInclude Include="src\XBai\Render\RenderCommand.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
     <ClInclude Include="src\XBai\Render\Renderer.h">
+      <Filter>src\XBai\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XBai\Render\Renderer2D.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
     <ClInclude Include="src\XBai\Render\RendererAPI.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
     <ClInclude Include="src\XBai\Render\Shader.h">
+      <Filter>src\XBai\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XBai\Render\SubTexture2D.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
     <ClInclude Include="src\XBai\Render\Texture.h">
@@ -1419,12 +1434,21 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\XBai\Render\Camera.h" />
+    <ClInclude Include="src\XBai\Scene\Component.h" />
+    <ClInclude Include="src\XBai\Scene\Entity.h" />
+    <ClInclude Include="src\XBai\Scene\Scene.h" />
+    <ClInclude Include="src\XBai\Scene\SceneCamera.h" />
+    <ClInclude Include="src\XBai\Scene\ScriptableEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFrameBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
@@ -1466,22 +1490,31 @@
     <ClCompile Include="src\XBai\Render\Buffer.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
+    <ClCompile Include="src\XBai\Render\FrameBuffer.cpp">
+      <Filter>src\XBai\Render</Filter>
+    </ClCompile>
     <ClCompile Include="src\XBai\Render\OrthographicCamera.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\XBai\Render\OrthographicCameraController.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
-    <ClCompile Include="src\XBai\Render\RenderCommend.cpp">
+    <ClCompile Include="src\XBai\Render\RenderCommand.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\XBai\Render\Renderer.cpp">
+      <Filter>src\XBai\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XBai\Render\Renderer2D.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\XBai\Render\RendererAPI.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\XBai\Render\Shader.cpp">
+      <Filter>src\XBai\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XBai\Render\SubTexture2D.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\XBai\Render\Texture.cpp">
@@ -1496,5 +1529,8 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\XBai\Scene\Entity.cpp" />
+    <ClCompile Include="src\XBai\Scene\Scene.cpp" />
+    <ClCompile Include="src\XBai\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>

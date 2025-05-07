@@ -1,7 +1,8 @@
 ﻿#include "xbpch.h"
 #include "OpenGLContext.h"
+
 #include <glad/glad.h>
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 XBai::OpenGLContext::OpenGLContext(GLFWwindow* windowHandle) :m_WindowHandle(windowHandle)
 {
@@ -14,6 +15,8 @@ XBai::OpenGLContext::~OpenGLContext()
 
 void XBai::OpenGLContext::Init()
 {
+	XB_PROFILE_FUNCTION()
+
 	glfwMakeContextCurrent(m_WindowHandle);
 	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	XB_CORE_ASSERT(status, "Failed to Init Glad!")
@@ -27,5 +30,6 @@ void XBai::OpenGLContext::Init()
 
 void XBai::OpenGLContext::SwapBuffers()
 {
+	XB_PROFILE_FUNCTION()
 	glfwSwapBuffers(m_WindowHandle);
 }

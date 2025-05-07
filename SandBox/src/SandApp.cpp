@@ -18,13 +18,13 @@ public:
 		Layer("Example"),
 		m_CameraController(1280.0f / 720.0f, true)
 	{
-		m_VertexArray.reset(XBai::VertexArray::Create());
+		m_VertexArray = XBai::VertexArray::Create();
 		float vertice[3 * 7] = {
 			-1.5f, -1.5f, 0.0f, 1.0f, 0.0f, 1.0, 1.0f,
 			 1.5f, -1.5f, 0.0f,	1.0f, 0.0f, 1.0, 1.0f,
 			 0.0f,  1.5f, 0.0f,	1.0f, 0.0f, 1.0, 1.0f
 		};
-		m_VertexBuffer.reset(XBai::VertexBuffer::Create(vertice, sizeof(vertice)));
+		m_VertexBuffer = XBai::VertexBuffer::Create(vertice, sizeof(vertice));
 		XBai::BufferLayout layout = {
 			{XBai::ShaderDataType::Float3, "a_Position", false},
 			{XBai::ShaderDataType::Float4, "a_Color", false},
@@ -33,10 +33,10 @@ public:
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
-		m_IndexBuffer.reset(XBai::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_IndexBuffer = XBai::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_SquareVA.reset(XBai::VertexArray::Create());
+		m_SquareVA = XBai::VertexArray::Create();
 		float vertice2[5 * 4] = {
 			-0.5f,  -0.5f, 0.0f,  0.0f, 0.0f,
 			 0.5f,  -0.5f, 0.0f,  1.0f, 0.0f,
@@ -44,7 +44,7 @@ public:
 			-0.5f,   0.5f, 0.0f,  0.0f, 1.0f
 		};
 		XBai::Ref<XBai::VertexBuffer> squareVB;
-		squareVB.reset(XBai::VertexBuffer::Create(vertice2, sizeof(vertice2)));
+		squareVB = XBai::VertexBuffer::Create(vertice2, sizeof(vertice2));
 		XBai::BufferLayout layout2 = {
 			{XBai::ShaderDataType::Float3, "a_Position", false},
 			{XBai::ShaderDataType::Float2, "a_Texcoord", false}
@@ -54,7 +54,7 @@ public:
 
 		uint32_t indices2[6] = { 0, 1, 2, 2, 3, 0 };
 		XBai::Ref<XBai::IndexBuffer> squareIB;
-		squareIB.reset(XBai::IndexBuffer::Create(indices2, sizeof(indices2) / sizeof(uint32_t)));
+		squareIB = XBai::IndexBuffer::Create(indices2, sizeof(indices2) / sizeof(uint32_t));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
 		auto backgroundShader = m_ShaderLibrary.Load("assets/shaders/Background.glsl");
@@ -72,8 +72,8 @@ public:
 
 		m_CameraController.OnUpdate(ts);
 
-		XBai::RenderCommend::SetClearColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
-		XBai::RenderCommend::Clear();
+		XBai::RenderCommand::SetClearColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		XBai::RenderCommand::Clear();
 
 		XBai::Renderer::BeginScene(m_CameraController.GetCamera());
 

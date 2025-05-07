@@ -15,6 +15,7 @@
 	#include <unordered_set>
 
 	#include "XBai/Core/Log.h"
+	#include "XBai/Debug/Instrumentor.h"
 
 	#ifdef XB_PLATFORM_WINDOWS
 		#include <Windows.h>

@@ -7,10 +7,7 @@ namespace XBai
 	{
 	public:
 		TimeStep(float time = 0.0f)
-			:m_Time(time)
-		{
-			
-		}
+			:m_Time(time) { }
 
 		operator float() const { return m_Time; }
 		//返回 秒

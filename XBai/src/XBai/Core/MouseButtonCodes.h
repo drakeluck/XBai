@@ -1,4 +1,4 @@
-#ifndef XB_MOUSEBUTTON_CODES_H
+﻿#ifndef XB_MOUSEBUTTON_CODES_H
 #define XB_MOUSEBUTTON_CODES_H
 
 //From glfw3.h

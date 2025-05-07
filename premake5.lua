@@ -1,5 +1,6 @@
 ﻿workspace "XBai"
 	architecture "x64"
+	startproject "SandBox"
 
 	configurations
 	{
@@ -16,10 +17,13 @@ IncludeDir["Glad"] = "XBai/vendor/Glad/include"
 IncludeDir["ImGui"] = "XBai/vendor/imgui"
 IncludeDir["glm"] = "XBai/vendor/glm"
 IncludeDir["stb_image"] = "XBai/vendor/stb_image"
+IncludeDir["entt"] = "XBai/vendor/entt/include"
 
-include "XBai/vendor/GLFW"
-include "XBai/vendor/Glad"
-include "XBai/vendor/imgui"
+group "Dependencies"
+	include "XBai/vendor/GLFW"
+	include "XBai/vendor/Glad"
+	include "XBai/vendor/imgui"
+group ""
 
 project "XBai"
 	location "XBai"
@@ -58,7 +62,8 @@ project "XBai"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links 
@@ -116,6 +121,61 @@ project "SandBox"
 		"XBai/vendor/spdlog/include",
 		"XBai/src",
 		"XBai/vendor",
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.glm}"
+	}
+
+	links
+	{
+		"XBai"
+	}
+
+	filter "system:windows"
+		
+		systemversion "latest"
+		defines
+		{
+			"XB_PLATFORM_WINDOWS"
+		}
+
+	filter "configurations:Debug"
+		defines "XB_DEBUG"
+		runtime "Debug"
+		symbols "On"
+
+	filter "configurations:Release"
+		defines "XB_RELEASE"
+		runtime "Release"
+		optimize "On"
+
+	filter "configurations:Dist"
+		defines "XB_DIST"
+		runtime "Release"
+		optimize "On"
+
+project "XBai-Editor"
+	location "XBai-Editor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "On"
+
+	targetdir ("bin/"..outputdir.."/%{prj.name}")
+	objdir ("bin-int/"..outputdir.."/%{prj.name}")
+	buildoptions{"/utf-8"}
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"XBai/vendor/spdlog/include",
+		"XBai/src",
+		"XBai/vendor",
+		"%{IncludeDir.entt}",
 		"%{IncludeDir.glm}"
 	}
 

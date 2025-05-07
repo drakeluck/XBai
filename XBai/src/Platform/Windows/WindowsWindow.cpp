@@ -15,9 +15,9 @@ namespace XBai
 		XB_CORE_ERROR("GLFW Error ({0}) : {1}", error, description);
 	}
 
-	Window* Window::Create(const WindowProps& props)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return CreateScope<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
@@ -27,11 +27,15 @@ namespace XBai
 
 	WindowsWindow::~WindowsWindow()
 	{
+		XB_PROFILE_FUNCTION()
+
 		Shutdown();
 	}
 
 	void WindowsWindow::Init(const WindowProps& props)
 	{
+		XB_PROFILE_FUNCTION()
+
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -141,15 +145,20 @@ namespace XBai
 
 	void WindowsWindow::Shutdown()
 	{
+		XB_PROFILE_FUNCTION()
+
 		glfwDestroyWindow(m_Window);
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
+		XB_PROFILE_FUNCTION()
+
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}
 
+	//设置是否垂直同步
 	void WindowsWindow::setVSync(bool enable)
 	{
 		glfwSwapInterval((int)enable);

@@ -1,28 +1,26 @@
 #include "xbpch.h"
-#include "WindowsInput.h"
+#include "XBai/Core/Input.h"
 
 #include "XBai/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace XBai
 {
-	Input* Input::s_Instance = new WindowsInput();
-
-	bool WindowsInput::IsKeyPressedImpl(int keycode)
+	bool Input::IsKeyPressed(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto status = glfwGetKey(window, keycode);
 		return status == GLFW_PRESS || status == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMousePressedImpl(int button)
+	bool Input::IsMousePressed(int button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto status = glfwGetMouseButton(window, button);
 		return status == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	std::pair<float, float> Input::GetMousePosition()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xPos, yPos;
@@ -30,15 +28,15 @@ namespace XBai
 		return { (float)xPos , (float)yPos };
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float Input::GetMouseX()
 	{
-		auto[x, y] = GetMousePositionImpl();
+		auto[x, y] = GetMousePosition();
 		return x;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float Input::GetMouseY()
 	{
-		auto [x, y] = GetMousePositionImpl();
+		auto [x, y] = GetMousePosition();
 		return y;
 	}
 }

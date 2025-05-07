@@ -1,4 +1,4 @@
-#ifndef XB_GRAPHICS_CONTEXT_H
+﻿#ifndef XB_GRAPHICS_CONTEXT_H
 #define XB_GRAPHICS_CONTEXT_H
 
 namespace XBai
@@ -9,7 +9,6 @@ namespace XBai
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
 	};
-
 }
 
 #endif

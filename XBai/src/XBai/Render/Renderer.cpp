@@ -1,6 +1,7 @@
 ﻿#include "xbpch.h"
 #include "Renderer.h"
-#include "RenderCommend.h"
+#include "RenderCommand.h"
+#include "Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -10,12 +11,15 @@ namespace XBai
 
 	void Renderer::Init()
 	{
-		RenderCommend::Init();
+		XB_PROFILE_FUNCTION()
+
+		RenderCommand::Init();
+		Renderer2D::Init();
 	}
 
 	void XBai::Renderer::OnWindowResize(uint32_t width, uint32_t height)
 	{
-		RenderCommend::SetViewPort(0, 0, width, height);
+		RenderCommand::SetViewPort(0, 0, width, height);
 	}
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
@@ -33,10 +37,10 @@ namespace XBai
 		const glm::mat4& transform)
 	{
 		shader->Bind();
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ModelMatrix", transform);
+		shader->SetMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		shader->SetMat4("u_ModelMatrix", transform);
 
 		vertexArray->Bind();
-		RenderCommend::DrawIndexed(vertexArray);
+		RenderCommand::DrawIndexed(vertexArray);
 	}
 }

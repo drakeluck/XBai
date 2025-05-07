@@ -16,7 +16,7 @@ namespace XBai
 	class XB_API Application
 	{
 	public :
-		Application();
+		Application(const std::string& name = "XBai App");
 		//析构函数被声明为虚函数，可以帮助子类正确释放资源
 		virtual ~Application();
 
@@ -28,6 +28,10 @@ namespace XBai
 
 		void PushOverlay(Layer* layer);
 
+		void Close();
+
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
 		inline static Application& Get() { return *s_Instance; }
 
 		inline Window& GetWindow() { return *m_Window; }
@@ -36,11 +40,11 @@ namespace XBai
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 	private:
-		std::unique_ptr<Window> m_Window;
+		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		bool m_Minimized = false;
-		TimeStep m_Timestep;
+		//TimeStep m_Timestep;
 		float m_LastFrameTime = 0.0f;
 		LayerStack m_LayerStack;
 
@@ -49,7 +53,6 @@ namespace XBai
 	};
 
 	Application* CreateApplication();
-
 }
 
 #endif

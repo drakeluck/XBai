@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>xbpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XB_PLATFORM_WINDOWS;XB_BUILD_DLL;GLFW_INCLUDE_NONE;XB_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeaderFile>xbpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XB_PLATFORM_WINDOWS;XB_BUILD_DLL;GLFW_INCLUDE_NONE;XB_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -125,7 +125,7 @@
       <PrecompiledHeaderFile>xbpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XB_PLATFORM_WINDOWS;XB_BUILD_DLL;GLFW_INCLUDE_NONE;XB_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -148,11 +148,11 @@
   <ItemGroup>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\XBai.h" />
     <ClInclude Include="src\XBai\Core\Application.h" />
@@ -166,21 +166,31 @@
     <ClInclude Include="src\XBai\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\XBai\Core\TimeStep.h" />
     <ClInclude Include="src\XBai\Core\Window.h" />
+    <ClInclude Include="src\XBai\Debug\Instrumentor.h" />
     <ClInclude Include="src\XBai\Events\ApplicationEvent.h" />
     <ClInclude Include="src\XBai\Events\Event.h" />
     <ClInclude Include="src\XBai\Events\KeyEvent.h" />
     <ClInclude Include="src\XBai\Events\MouseEvent.h" />
     <ClInclude Include="src\XBai\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\XBai\Render\Buffer.h" />
+    <ClInclude Include="src\XBai\Render\Camera.h" />
+    <ClInclude Include="src\XBai\Render\FrameBuffer.h" />
     <ClInclude Include="src\XBai\Render\GraphicsContext.h" />
     <ClInclude Include="src\XBai\Render\OrthographicCamera.h" />
     <ClInclude Include="src\XBai\Render\OrthographicCameraController.h" />
-    <ClInclude Include="src\XBai\Render\RenderCommend.h" />
+    <ClInclude Include="src\XBai\Render\RenderCommand.h" />
     <ClInclude Include="src\XBai\Render\Renderer.h" />
+    <ClInclude Include="src\XBai\Render\Renderer2D.h" />
     <ClInclude Include="src\XBai\Render\RendererAPI.h" />
     <ClInclude Include="src\XBai\Render\Shader.h" />
+    <ClInclude Include="src\XBai\Render\SubTexture2D.h" />
     <ClInclude Include="src\XBai\Render\Texture.h" />
     <ClInclude Include="src\XBai\Render\VertexArray.h" />
+    <ClInclude Include="src\XBai\Scene\Component.h" />
+    <ClInclude Include="src\XBai\Scene\Entity.h" />
+    <ClInclude Include="src\XBai\Scene\Scene.h" />
+    <ClInclude Include="src\XBai\Scene\SceneCamera.h" />
+    <ClInclude Include="src\XBai\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\xbpch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -605,6 +615,7 @@
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
@@ -618,14 +629,20 @@
     <ClCompile Include="src\XBai\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\XBai\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\XBai\Render\Buffer.cpp" />
+    <ClCompile Include="src\XBai\Render\FrameBuffer.cpp" />
     <ClCompile Include="src\XBai\Render\OrthographicCamera.cpp" />
     <ClCompile Include="src\XBai\Render\OrthographicCameraController.cpp" />
-    <ClCompile Include="src\XBai\Render\RenderCommend.cpp" />
+    <ClCompile Include="src\XBai\Render\RenderCommand.cpp" />
     <ClCompile Include="src\XBai\Render\Renderer.cpp" />
+    <ClCompile Include="src\XBai\Render\Renderer2D.cpp" />
     <ClCompile Include="src\XBai\Render\RendererAPI.cpp" />
     <ClCompile Include="src\XBai\Render\Shader.cpp" />
+    <ClCompile Include="src\XBai\Render\SubTexture2D.cpp" />
     <ClCompile Include="src\XBai\Render\Texture.cpp" />
     <ClCompile Include="src\XBai\Render\VertexArray.cpp" />
+    <ClCompile Include="src\XBai\Scene\Entity.cpp" />
+    <ClCompile Include="src\XBai\Scene\Scene.cpp" />
+    <ClCompile Include="src\XBai\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\xbpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

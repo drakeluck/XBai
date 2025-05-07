@@ -1,7 +1,7 @@
 ﻿#ifndef XB_RENDERER_H
 #define XB_RENDERER_H
 
-#include "RenderCommend.h"
+#include "RenderCommand.h"
 #include "OrthographicCamera.h"
 #include "Shader.h"
 

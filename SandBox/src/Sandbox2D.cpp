@@ -1,72 +1,137 @@
 ﻿#include "Sandbox2D.h"
 
 #include "imgui/imgui.h"
+#include "XBai/Render/Texture.h"
 #include <Platform/OpenGL/OpenGLShader.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Sandbox2D::Sandbox2D() : Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
+static const uint32_t s_MapWidth = 24;
+static const uint32_t s_MapHeight = 24;
+
+static const char* s_MapTiles =
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WDDDDDDDDDDDDDDDDDDDDDDW"
+"WDDDDDDDDDDDDDDDDDDDDDDW"
+"WDDDDDDDDDDDDDDDDDDDDDDW"
+"WDDDDDDDDDDDDDDDDDDDDDDW"
+"WDDDDDDDDDDDDDDDDDDDDDDW"
+"WDDDDDDDDDDDDDDDDDDDDDDW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWDDDDDDWWWWWWWWW"
+"WWWWWWWWWWDDDDWWWWWWWWWW"
+"WWWWWWWWWWWDDWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+;
+
+Sandbox2D::Sandbox2D() : Layer("Sandbox2D")
+	, m_CameraController(1280.0f / 720.0f, true)
+	, m_ParticleSystem(10000)
 {
 	
 }
 
 void Sandbox2D::OnAttach()
 {
-	// 渲染网格 flat
-	float flatVertices[3 * 4] = {
-		-0.75f, -0.75f, 0.0f,
-		0.75f, -0.75f, 0.0f,
-		0.75f,  0.75f, 0.0f,
-		-0.75f,  0.75f, 0.0f
-	};
-	// 1.创建顶点数组
-	m_FlatVertexArray.reset(XBai::VertexArray::Create());
-	// 2.创建顶点缓冲区
-	XBai::Ref<XBai::VertexBuffer> flatVB;
-	flatVB.reset(XBai::VertexBuffer::Create(flatVertices, sizeof(flatVertices)));
-	// 2.1设置顶点缓冲区布局
-	XBai::BufferLayout layout = {
-		{XBai::ShaderDataType::Float3, "a_Position"}
-	};
-	flatVB->SetLayout(layout);
-	// 1.1顶点数组添加顶点缓冲区，并且在这个缓冲区中设置布局
-	m_FlatVertexArray->AddVertexBuffer(flatVB);
-	// 3.索引缓冲
-	uint32_t flatIndices[] = { 0, 1, 2, 2, 3, 0 };
-	XBai::Ref<XBai::IndexBuffer> flatIB;
-	flatIB.reset(XBai::IndexBuffer::Create(flatIndices, sizeof(flatIndices) / sizeof(uint32_t)));
-	// 1.2顶点数组设置索引缓冲区
-	m_FlatVertexArray->SetIndexBuffer(flatIB);
-	m_FlatShader = (XBai::Shader::Create("assets/shaders/FlatColor.glsl"));
+	XB_PROFILE_FUNCTION()
+
+	XBai::Renderer2D::Init();
+	m_CheckerboardTexture = XBai::Texture2D::Create("assets/textures/Checkerboard.png");
+	m_SpriteSheet = XBai::Texture2D::Create("assets/textures/tinytown/Tilemap/tilemap_packed.png");
+	s_TextureMap['W'] = XBai::SubTexture2D::CreateFromCoords(m_SpriteSheet, {1, 10}, {16, 16});
+	s_TextureMap['D'] =  XBai::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 7 }, { 16, 16 });
+
+	XBai::FrameBufferSpecification spec;
+	spec.Width = 1280;
+	spec.Height = 720;
+	//m_FrameBuffer = XBai::FrameBuffer::Create(spec);
+
+
+	m_Particle.ColorBegin = {254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f};
+	m_Particle.ColorEnd = { 254 / 255.0f, 209 / 255.0f, 41 / 255.0f, 1.0f };
+	m_Particle.SizeBegin = 0.2f;
+	m_Particle.SizeVariation = 0.05f;
+	m_Particle.SizeEnd = 0.0f;
+	m_Particle.LifeTime = 1.0f;
+	m_Particle.Velocity = {0.0f, 0.0f};
+	m_Particle.VelocityVariation = {2.0f, 1.0f};
+	m_Particle.Position = {0.0f, 0.0f};
 }
 
 void Sandbox2D::OnDetach()
 {
-	
+	XB_PROFILE_FUNCTION()
 }
 
 void Sandbox2D::OnUpdate(XBai::TimeStep ts)
 {
+	XB_PROFILE_FUNCTION()
+
 	m_CameraController.OnUpdate(ts);
 
-	XBai::RenderCommend::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-	XBai::RenderCommend::Clear();
+	XBai::Renderer2D::ResetStats();
+	
+	{
+		//XB_PROFILE_SCOPE("Clear Color") --0.001ms
+		XBai::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+		XBai::RenderCommand::Clear();
+	}
 
-	XBai::Renderer::BeginScene(m_CameraController.GetCamera());
+	{
+		XB_PROFILE_SCOPE("SandBox2D::Every Scene")
+		XBai::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-	std::dynamic_pointer_cast<XBai::OpenGLShader>(m_FlatShader)->Bind();
-	std::dynamic_pointer_cast<XBai::OpenGLShader>(m_FlatShader)->UploadUniformFloat4("u_Color", m_FlatColor);
-	glm::mat4 squareTexCoordtransfrom = glm::translate(glm::mat4(1.0f), { 0.0f, 0.0f, 0.0f });
-	XBai::Renderer::Submit(m_FlatShader, m_FlatVertexArray, squareTexCoordtransfrom);
+		//棋盘背景
+		//XBai::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.3f }, { 20.0f, 20.0f }, m_CheckerboardTexture, 10.0f);
 
-	XBai::Renderer::EndScene();
+		for (uint32_t y = 0; y < s_MapHeight; y++)
+		{
+			for (uint32_t x = 0; x < s_MapWidth; x++)
+			{
+				char tiletype = s_MapTiles[y * s_MapWidth + x];
+				if (s_TextureMap.find(tiletype) != s_TextureMap.end())
+				{
+					XBai::Renderer2D::DrawQuad({ x - s_MapWidth / 2.0f, s_MapHeight - y - s_MapHeight / 2.0f, 0.1f }, { 1.0f, 1.0f }, s_TextureMap[tiletype]);
+				}
+			}
+		}
+		// //不旋转 不带纹理
+		// XBai::Renderer2D::DrawQuad({0.26f, 0.41f, 0.97f}, {0.3f, 0.6f}, { 0.8f, 0.6f, 0.1f, 1.0f });
+		// //不旋转 带纹理
+		//XBai::Renderer2D::DrawQuad({ -1.0f, 0.0f,  0.0f }, { 1.8f, 1.8f }, m_SpriteSheet);
+		// //旋转 带纹理
+		// XBai::Renderer2D::DrawRotatedQuad({ -0.3f, 0.0f, - 0.2f }, { 0.4f, 0.4f }, 64.0f, m_CheckerboardTexture, 5.0f);
+		// //旋转 不带纹理(这里的旋转是弧度)
+		// XBai::Renderer2D::DrawRotatedQuad({ -0.4f, 0.0f, - 0.2f }, { 0.4f, 0.4f }, glm::radians(16.0f), { 0.2f, 0.8f, 0.4f, 1.0f });
+		XBai::Renderer2D::EndScene();
+	}
 }
 
 void Sandbox2D::OnImGuiRender()
 {
 	ImGui::Begin("Settings");
-	ImGui::ColorEdit4("Square Color", glm::value_ptr(m_FlatColor));
+
+	auto stats = XBai::Renderer2D::GetStats();
+	ImGui::Text("Renderer2D Stats:");
+	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+	ImGui::Text("Quad Count: %d", stats.QuadCount);
+	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
 	ImGui::End();
+
 }
 
 void Sandbox2D::OnEvent(XBai::Event& e)

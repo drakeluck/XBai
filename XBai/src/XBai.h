@@ -15,13 +15,21 @@
 
 #include "XBai/ImGui/ImGuiLayer.h"
 
+#include "XBai/Scene/Scene.h"
+#include "XBai/Scene/Entity.h"
+#include "XBai/Scene/ScriptableEntity.h"
+#include "XBai/Scene/Component.h"
+
 //-----------↓↓Renderer↓↓---------------
 #include "XBai/Render/Renderer.h"
-#include "XBai/Render/RenderCommend.h"
+#include "XBai/Render/Renderer2D.h"
+#include "XBai/Render/RenderCommand.h"
 
 #include "XBai/Render/Buffer.h"
 #include "XBai/Render/Shader.h"
+#include "XBai/Render/FrameBuffer.h"
 #include "XBai/Render/Texture.h"
+#include "XBai/Render/SubTexture2D.h"
 #include "XBai/Render/VertexArray.h"
 
 #include "XBai/Render/OrthographicCamera.h"

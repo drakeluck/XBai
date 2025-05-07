@@ -20,6 +20,8 @@ namespace XBai
 
 	OpenGLShader::OpenGLShader(const std::string& filePath)
 	{
+		XB_PROFILE_FUNCTION()
+
 		std::string source = ReadFile(filePath);
 		auto shadersource = PreProcess(source);
 		Compile(shadersource);
@@ -34,6 +36,8 @@ namespace XBai
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		:m_Name(name)
 	{
+		XB_PROFILE_FUNCTION()
+
 		std::unordered_map<unsigned int, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -41,17 +45,63 @@ namespace XBai
 	}
 	OpenGLShader::~OpenGLShader()
 	{
+		XB_PROFILE_FUNCTION()
+
 		glDeleteProgram(m_RendererID);
 	}
 
 	void OpenGLShader::Bind() const
 	{
+		XB_PROFILE_FUNCTION()
+
 		glUseProgram(m_RendererID);
 	}
 
 	void OpenGLShader::Unbind() const
 	{
+		XB_PROFILE_FUNCTION()
+
 		glUseProgram(0);
+	}
+
+	void OpenGLShader::SetInt(const std::string& name, int value)
+	{
+		XB_PROFILE_FUNCTION()
+
+		UploadUniformInt(name, value);
+	}
+
+	void OpenGLShader::SetIntArray(const std::string& name, int* value, uint32_t count)
+	{
+		UploadUniformIntArray(name, value, count);
+	}
+
+	void OpenGLShader::SetFloat(const std::string& name, float value)
+	{
+		XB_PROFILE_FUNCTION()
+
+		UploadUniformFloat(name, value);
+	}
+
+	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3 value)
+	{
+		XB_PROFILE_FUNCTION()
+
+		UploadUniformFloat3(name, value);
+	}
+
+	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4 value)
+	{
+		XB_PROFILE_FUNCTION()
+
+		UploadUniformFloat4(name, value);
+	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4 value)
+	{
+		XB_PROFILE_FUNCTION()
+
+		UploadUniformMat4(name, value);
 	}
 
 	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
@@ -64,6 +114,13 @@ namespace XBai
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* value, uint32_t count)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1iv(location, count, value);
+		//glUniform1uiv(location, count, value);
 	}
 
 	void OpenGLShader::UploadUniformInt(const std::string& name, uint32_t value)
@@ -116,6 +173,8 @@ namespace XBai
 
 	std::string OpenGLShader::ReadFile(const std::string& filePath)
 	{
+		XB_PROFILE_FUNCTION()
+
 		std::string result;
 		std::ifstream in(filePath, std::ios::in | std::ios::binary);
 		if (in)
@@ -135,6 +194,8 @@ namespace XBai
 
 	std::unordered_map<unsigned int, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		XB_PROFILE_FUNCTION()
+
 		std::unordered_map<unsigned int, std::string> shaderSources;
 
 		const char* typeToken = "#type";
@@ -160,6 +221,8 @@ namespace XBai
 
 	void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& shaderSources)
 	{
+		XB_PROFILE_FUNCTION()
+
 		unsigned int program = glCreateProgram();
 		std::array<GLenum, 2> glShaderIDs;
 		int glShaderIDIndex = 0;

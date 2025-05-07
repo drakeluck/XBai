@@ -5,7 +5,7 @@
 
 namespace XBai
 {
-	VertexArray* VertexArray::Create()
+	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -13,7 +13,7 @@ namespace XBai
 			XB_CORE_ASSERT(false, "RendererAPI::None is current not supported!")
 			return nullptr;
 		case RendererAPI::API::OpenGL:
-			return new OpenGLVertexArray();
+			return CreateRef<OpenGLVertexArray>();
 		}
 		XB_CORE_ASSERT(false, "Unknow RendererAPI!")
 		return nullptr;

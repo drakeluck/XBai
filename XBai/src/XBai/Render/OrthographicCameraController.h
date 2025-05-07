@@ -10,6 +10,15 @@
 
 namespace XBai
 {
+	struct OrthographicCameraBounds
+	{
+		float Left, Right;
+		float Bottom, Top;
+
+		float GetWidth() { return Right - Left; }
+		float GetHeight() { return Top - Bottom; }
+	};
+
 	class OrthographicCameraController
 	{
 	public:
@@ -18,12 +27,15 @@ namespace XBai
 
 		void OnUpdate(TimeStep ts);
 		void OnEvent(Event& e);
+
+		void OnResize(float width, float height);
 		OrthographicCamera& GetCamera() { return m_Camera; }
 		const OrthographicCamera& GetCamera() const { return m_Camera; }
-
-		void SetZoomLevel(float level) { m_ZoomLevel = level; }
+		const OrthographicCameraBounds& GetBounds() { return m_Bounds; }
+		void SetZoomLevel(float level) { m_ZoomLevel = level; CalculateView(); }
 		float GetZoomLevel() const { return m_ZoomLevel; }
 	private:
+		void CalculateView();
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 	private:
@@ -31,6 +43,7 @@ namespace XBai
 		float m_AspectRatio;
 		//缩放比
 		float m_ZoomLevel = 1.0f;
+		OrthographicCameraBounds m_Bounds;
 		OrthographicCamera m_Camera;
 		bool m_Rotation;
 
