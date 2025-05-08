@@ -1,41 +1,10 @@
 ﻿#include "xbpch.h"
 #include "EditorLayer.h"
-
 #include "imgui/imgui.h"
-#include "XBai/Render/Texture.h"
+#include "XBai/Scene/SceneSerializer.h"
+#include "XBai/Utils/PlatformUtils.h"
 #include <Platform/OpenGL/OpenGLShader.h>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-static const uint32_t s_MapWidth = 24;
-static const uint32_t s_MapHeight = 24;
-
-static const char* s_MapTiles =
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WDDDDDDDDDDDDDDDDDDDDDDW"
-"WDDDDDDDDDDDDDDDDDDDDDDW"
-"WDDDDDDDDDDDDDDDDDDDDDDW"
-"WDDDDDDDDDDDDDDDDDDDDDDW"
-"WDDDDDDDDDDDDDDDDDDDDDDW"
-"WDDDDDDDDDDDDDDDDDDDDDDW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWDDDDDDWWWWWWWWW"
-"WWWWWWWWWWDDDDWWWWWWWWWW"
-"WWWWWWWWWWWDDWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-"WWWWWWWWWWWWWWWWWWWWWWWW"
-;
 
 namespace XBai
 {
@@ -51,65 +20,12 @@ namespace XBai
 		XB_PROFILE_FUNCTION()
 
 		Renderer2D::Init();
-		m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
-		m_SpriteSheet = Texture2D::Create("assets/textures/tinytown/Tilemap/tilemap_packed.png");
-		s_TextureMap['W'] = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 1, 10 }, { 16, 16 });
-		s_TextureMap['D'] = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 7 }, { 16, 16 });
-
 		FrameBufferSpecification spec;
 		spec.Width = 1280;
 		spec.Height = 720;
 		m_FrameBuffer = XBai::FrameBuffer::Create(spec);
-
 		m_ActiveScene = CreateRef<Scene>();
-		m_SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		m_SecondCameraEntity = m_ActiveScene->CreateEntity("Second Camera");
-
-		m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
-		m_CameraEntity.AddComponent<CameraComponent>();
-		auto& cc = m_SecondCameraEntity.AddComponent<CameraComponent>();
-		cc.Primary = false;
-
-		class CameraController : public ScriptableEntity
-		{
-		public:
-			void OnCreate()
-			{
-			}
-
-			void OnDestroy()
-			{
-				
-			}
-
-			void OnUpdate(TimeStep ts)
-			{
-				auto& translation = GetComponent<TransformComponent>().Translation;
-				float speed = 5.0f;
-				if (XBai::Input::IsKeyPressed(XB_KEY_W))
-				{
-					translation.y += ts * speed;
-				}
-				if (XBai::Input::IsKeyPressed(XB_KEY_S))
-				{
-					translation.y -= ts * speed;
-				}
-				if (XBai::Input::IsKeyPressed(XB_KEY_A))
-				{
-					translation.x -= ts * speed;
-				}
-				if (XBai::Input::IsKeyPressed(XB_KEY_D))
-				{
-					translation.x += ts * speed;
-				}
-			}
-		};
-
-		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-		
 	}
 
 	void EditorLayer::OnDetach()
@@ -172,8 +88,6 @@ namespace XBai
 		{
 			dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
 		}
-
-
 		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 			window_flags |= ImGuiWindowFlags_NoBackground;
 
@@ -190,7 +104,7 @@ namespace XBai
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
 		float minWinSizeX = style.WindowMinSize.x;
-		style.WindowMinSize.x = 370.0f;
+		style.WindowMinSize.x = 350.0f;
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -202,13 +116,23 @@ namespace XBai
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Close")) XBai::Application::Get().Close();
+				if (ImGui::MenuItem("New", "Ctrl+N"))
+				{
+					NewScene();
+				}
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+				{
+					OpenScene();
+				}
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+				{
+					SaveSceneAs();
+				}
+				if (ImGui::MenuItem("Close")) Application::Get().Close();
 				ImGui::EndMenu();
 			}
-
 			ImGui::EndMenuBar();
 		}
-
 		m_SceneHierarchyPanel.OnImGuiRender();
 
 		ImGui::Begin("Status");
@@ -232,7 +156,6 @@ namespace XBai
 		if (m_ViewportSize.x != viewportPanelSize.x || m_ViewportSize.y != viewportPanelSize.y)
 		{
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			// m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
 		}
 
@@ -241,13 +164,77 @@ namespace XBai
 		ImGui::PopStyleVar();
 
 		ImGui::End();
-
 	}
 
 	void EditorLayer::OnEvent(Event& e)
 	{
 		// 事件
 		m_CameraController.OnEvent(e);
+
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(XB_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.GetRepeatCount() > 0)
+		{
+			return false;
+		}
+		bool control = Input::IsKeyPressed(XB_KEY_LEFT_CONTROL) || Input::IsKeyPressed(XB_KEY_RIGHT_CONTROL);
+		bool shift = Input::IsKeyPressed(XB_KEY_LEFT_SHIFT) || Input::IsKeyPressed(XB_KEY_RIGHT_SHIFT);
+		switch (e.GetKeyCode())
+		{
+		case XB_KEY_N:
+			if (control)
+			{
+				NewScene();
+			}
+			break;
+		case XB_KEY_O:
+			if (control)
+			{
+				OpenScene();
+			}
+			break;
+
+		case XB_KEY_S:
+			if (control && shift)
+			{
+				SaveSceneAs();
+			}
+			break;
+		}
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("XBai Scene (*.xbai)\0*.xbai\0");
+		if (!filepath.empty())
+		{
+			m_ActiveScene = CreateRef<Scene>();
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Deserialize(filepath);
+		}
+	}
+
+	void EditorLayer::SaveSceneAs()
+	{
+		std::string filepath = FileDialogs::SaveFile("XBai Scene (*.xbai)\0*.xbai\0");
+		if (!filepath.empty())
+		{
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(filepath);
+		}
 	}
 }
 

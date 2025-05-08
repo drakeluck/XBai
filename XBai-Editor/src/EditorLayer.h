@@ -18,7 +18,11 @@ namespace XBai
 		virtual void OnUpdate(TimeStep ts) override;
 		virtual void OnImGuiRender()override;
 		virtual void OnEvent(Event& e)override;
-
+	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+		void NewScene();
+		void OpenScene();
+		void SaveSceneAs();
 	private:
 		OrthographicCameraController m_CameraController;
 		Ref<Shader> m_FlatShader;			// shader类 指针
@@ -29,9 +33,9 @@ namespace XBai
 		Ref<FrameBuffer> m_FrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
-		Entity m_SquareEntity;
-		Entity m_CameraEntity;
-		Entity m_SecondCameraEntity;
+		// Entity m_SquareEntity;
+		// Entity m_CameraEntity;
+		// Entity m_SecondCameraEntity;
 
 		glm::vec2 m_ViewportSize = {1.0f, 1.0f};
 
@@ -40,7 +44,7 @@ namespace XBai
 
 		glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
-		std::unordered_map<char, XBai::Ref<SubTexture2D>> s_TextureMap;
+		std::unordered_map<char, Ref<SubTexture2D>> s_TextureMap;
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

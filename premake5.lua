@@ -18,11 +18,13 @@ IncludeDir["ImGui"] = "XBai/vendor/imgui"
 IncludeDir["glm"] = "XBai/vendor/glm"
 IncludeDir["stb_image"] = "XBai/vendor/stb_image"
 IncludeDir["entt"] = "XBai/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "XBai/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "XBai/vendor/GLFW"
 	include "XBai/vendor/Glad"
 	include "XBai/vendor/imgui"
+	include "XBai/vendor/yaml-cpp"
 group ""
 
 project "XBai"
@@ -63,7 +65,8 @@ project "XBai"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links 
@@ -71,6 +74,7 @@ project "XBai"
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"yaml-cpp",
 		"opengl32.lib"
 	}
 

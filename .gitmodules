@@ -10,3 +10,6 @@
 [submodule "XBai/vendor/glm"]
 	path = XBai/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "XBai/vendor/yaml-cpp"]
+	path = XBai/vendor/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
