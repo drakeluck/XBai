@@ -19,6 +19,7 @@ IncludeDir["glm"] = "XBai/vendor/glm"
 IncludeDir["stb_image"] = "XBai/vendor/stb_image"
 IncludeDir["entt"] = "XBai/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "XBai/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] = "XBai/vendor/ImGuizmo"
 
 group "Dependencies"
 	include "XBai/vendor/GLFW"
@@ -48,7 +49,9 @@ project "XBai"
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
 	}
 
 	defines
@@ -66,7 +69,8 @@ project "XBai"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links 
@@ -77,6 +81,9 @@ project "XBai"
 		"yaml-cpp",
 		"opengl32.lib"
 	}
+
+	filter "files:XBai/vendor/ImGuizmo/ImGuizmo.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		

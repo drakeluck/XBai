@@ -3,6 +3,7 @@
 
 #include "XBai.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "XBai/Render/EditorCamera.h"
 
 namespace XBai
 {
@@ -20,6 +21,7 @@ namespace XBai
 		virtual void OnEvent(Event& e)override;
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 		void NewScene();
 		void OpenScene();
 		void SaveSceneAs();
@@ -33,22 +35,23 @@ namespace XBai
 		Ref<FrameBuffer> m_FrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
-		// Entity m_SquareEntity;
-		// Entity m_CameraEntity;
-		// Entity m_SecondCameraEntity;
 
-		glm::vec2 m_ViewportSize = {1.0f, 1.0f};
+		Entity m_HoveredEntity;
+
+		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
+		glm::vec2 m_ViewportBounds[2];
+
+		EditorCamera m_EditorCamera;
 
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 
-		glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
-
 		std::unordered_map<char, Ref<SubTexture2D>> s_TextureMap;
+
+		int m_GizmoType = -1;
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
-
 	};
 }
 

@@ -3,7 +3,6 @@
 #include "RenderCommand.h"
 #include "Shader.h"
 #include <glm/gtc/matrix_transform.hpp>
-//#include "Platform/OpenGL/OpenGLShader.h"
 
 namespace XBai
 {
@@ -15,6 +14,9 @@ namespace XBai
 		float TexIndex;  //纹理插槽索引
 		float TilingFactor = 1.0f; //平铺系数
 		//TODO:以后texid,..
+
+		//editor-only
+		int EntityID;
 	};
 
 	struct Renderer2DData
@@ -59,8 +61,9 @@ namespace XBai
 				{ShaderDataType::Float3, "a_Position"},
 				{ShaderDataType::Float4, "a_Color"},
 				{ShaderDataType::Float2, "a_Texcoord"},
-				{ShaderDataType::Float, "a_TexIndex"},
-				{ShaderDataType::Float, "a_TilingFactor"}
+				{ShaderDataType::Float,  "a_TexIndex"},
+				{ShaderDataType::Float,  "a_TilingFactor"},
+				{ShaderDataType::Int,    "a_EntityID"}
 			});
 
 		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
@@ -125,10 +128,19 @@ namespace XBai
 		s_Data.BatchShader->Bind();
 		s_Data.BatchShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		StartBatch();
+	}
 
-		s_Data.TextureSlotIndex = 1;
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		XB_PROFILE_FUNCTION()
+
+		glm::mat4 viewProj = camera.GetViewProjection();
+		
+		s_Data.BatchShader->Bind();
+		s_Data.BatchShader->SetMat4("u_ViewProjection", viewProj);
+		
+		StartBatch();
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
@@ -140,6 +152,11 @@ namespace XBai
 		s_Data.BatchShader->Bind();
 		s_Data.BatchShader->SetMat4("u_ViewProjection", viewProj);
 
+		StartBatch();
+	}
+
+	void Renderer2D::StartBatch()
+	{
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
@@ -161,11 +178,7 @@ namespace XBai
 	void Renderer2D::FlushAndReset()
 	{
 		EndScene();
-
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 
 	void Renderer2D::EndScene()
@@ -261,7 +274,7 @@ namespace XBai
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
 		XB_PROFILE_FUNCTION()
 
@@ -278,13 +291,14 @@ namespace XBai
 			s_Data.QuadVertexBufferPtr->TexCoord = s_Data.QuadTexboords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 		s_Data.QuadIndexCount += 6;
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& tineColor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& tineColor, int entityID)
 	{
 		XB_PROFILE_FUNCTION()
 
@@ -317,6 +331,7 @@ namespace XBai
 			s_Data.QuadVertexBufferPtr->TexCoord = s_Data.QuadTexboords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 		s_Data.QuadIndexCount += 6;
@@ -352,6 +367,12 @@ namespace XBai
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 		DrawQuad(transform, texture, tilingFactor, color);
+	}
+
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
+	{
+		DrawQuad(transform, src.Color, entityID);
+		//TODO:
 	}
 
 	void Renderer2D::ResetStats()

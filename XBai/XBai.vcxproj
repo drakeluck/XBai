@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>xbpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XB_PLATFORM_WINDOWS;XB_BUILD_DLL;GLFW_INCLUDE_NONE;XB_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeaderFile>xbpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XB_PLATFORM_WINDOWS;XB_BUILD_DLL;GLFW_INCLUDE_NONE;XB_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -125,7 +125,7 @@
       <PrecompiledHeaderFile>xbpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XB_PLATFORM_WINDOWS;XB_BUILD_DLL;GLFW_INCLUDE_NONE;XB_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -172,8 +172,10 @@
     <ClInclude Include="src\XBai\Events\KeyEvent.h" />
     <ClInclude Include="src\XBai\Events\MouseEvent.h" />
     <ClInclude Include="src\XBai\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\XBai\Math\Math.h" />
     <ClInclude Include="src\XBai\Render\Buffer.h" />
     <ClInclude Include="src\XBai\Render\Camera.h" />
+    <ClInclude Include="src\XBai\Render\EditorCamera.h" />
     <ClInclude Include="src\XBai\Render\FrameBuffer.h" />
     <ClInclude Include="src\XBai\Render\GraphicsContext.h" />
     <ClInclude Include="src\XBai\Render\OrthographicCamera.h" />
@@ -194,6 +196,7 @@
     <ClInclude Include="src\XBai\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\XBai\Utils\PlatformUtils.h" />
     <ClInclude Include="src\xbpch.h" />
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -631,7 +634,9 @@
     <ClCompile Include="src\XBai\Core\Log.cpp" />
     <ClCompile Include="src\XBai\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\XBai\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\XBai\Math\Math.cpp" />
     <ClCompile Include="src\XBai\Render\Buffer.cpp" />
+    <ClCompile Include="src\XBai\Render\EditorCamera.cpp" />
     <ClCompile Include="src\XBai\Render\FrameBuffer.cpp" />
     <ClCompile Include="src\XBai\Render\OrthographicCamera.cpp" />
     <ClCompile Include="src\XBai\Render\OrthographicCameraController.cpp" />
@@ -649,6 +654,9 @@
     <ClCompile Include="src\XBai\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\xbpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>

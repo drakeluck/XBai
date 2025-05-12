@@ -16,9 +16,7 @@ namespace XBai
 		enum class ProjectionType { Perspective = 0, Orthographic = 1};
 
 	public:
-
 		SceneCamera();
-
 		virtual ~SceneCamera() override = default;
 
 		void SetProjectionType(ProjectionType type) { m_ProjectionType = type;  RecalculateProjection(); }
@@ -60,7 +58,6 @@ namespace XBai
 		void RecalculateProjection();
 
 	private:
-
 		ProjectionType m_ProjectionType = ProjectionType::Orthographic;
 
 		float m_PerspectiveFOV = glm::radians(45.0f);

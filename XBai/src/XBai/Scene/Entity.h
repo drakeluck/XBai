@@ -9,14 +9,18 @@ namespace XBai
 	class Entity
 	{
 	public:
-		Entity() = default;
+		Entity();
 		Entity(entt::entity handle, Scene* scene);
 		Entity(const Entity& other) = default;
 
 		template<typename T, typename...Args>
 		T& AddComponent(Args... args)
 		{
-			XB_CORE_ASSERT(!HasComponent<T>(), "Entity is already had this Component!")
+			//XB_CORE_ASSERT(!HasComponent<T>(), "Entity is already had this Component!")
+			if (HasComponent<T>())//如果已有相同组件，则返回此已有组件
+			{
+				return GetComponent<T>();
+			}
 			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 			m_Scene->OnComponentAdded<T>(*this, component);
 			return component;
@@ -48,8 +52,6 @@ namespace XBai
 
 		bool operator==(const Entity& other) const { return (m_EntityHandle == other.m_EntityHandle) && (m_Scene == other.m_Scene); }
 		bool operator!=(const Entity& other) const { return !(*this == other); }
-		
-
 	private:
 		entt::entity m_EntityHandle{ entt::null };
 		Scene* m_Scene = nullptr;

@@ -22,27 +22,26 @@ namespace XBai
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("实体列表");
-		//新版本entt没有each函数了，需要用view函数去取得所有实体
-		for (auto entityID : m_Context->m_Registry.view<entt::entity>())
+		if (m_Context)
 		{
-			Entity ent{entityID, m_Context.get()};
+			//新版本entt没有each函数了，需要用view函数去取得所有实体
+			for (auto entityID : m_Context->m_Registry.view<entt::entity>())
+			{
+				DrawEntityNode({ entityID, m_Context.get() });
+			}
 
-			DrawEntityNode(ent);
+			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+			{
+				m_SelectionContext = {};
+			}
+			if (ImGui::BeginPopupContextWindow("创建实体", 1))
+			{
+				if (ImGui::MenuItem("创建一个空实体"))
+					m_Context->CreateEntity("Empty Entity");
+
+				ImGui::EndPopup();
+			}
 		}
-
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-		{
-			m_SelectionContext = {};
-		}
-		if (ImGui::BeginPopupContextWindow(0, 1))
-		{
-			if (ImGui::MenuItem("创建一个空实体"))
-				m_Context->CreateEntity("Empty Entity");
-			
-			ImGui::EndPopup();
-		}
-
-
 		ImGui::End();
 
 		ImGui::Begin("各组件属性");
@@ -53,6 +52,11 @@ namespace XBai
 
 		ImGui::End();
 
+	}
+
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+	{
+		m_SelectionContext = entity;
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
@@ -68,9 +72,10 @@ namespace XBai
 
 		}
 		bool isDeleted = false;
-		if (ImGui::BeginPopupContextItem())
+		if (ImGui::BeginPopupContextItem("右键菜单"))
 		{
-			if (ImGui::MenuItem("删除该实体"))
+			ImGui::Text("This a popup for");
+			if (ImGui::Button("删除该实体"))
 				isDeleted = true;
 			
 			ImGui::EndPopup();

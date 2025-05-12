@@ -1,6 +1,6 @@
 ﻿#include "xbpch.h"
 #include "Scene.h"
-#include "Entity.h"
+
 #include "Component.h"
 #include "XBai/Render/Renderer2D.h"
 
@@ -32,7 +32,23 @@ namespace XBai
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::OnUpdate(TimeStep ts)
+	void Scene::OnUpdateEditor(TimeStep ts, EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : group)
+		{
+			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+
+			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+			//Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
+	}
+
+	void Scene::OnUpdateRuntime(TimeStep ts)
 	{
 		//更新脚本
 		{
@@ -73,6 +89,7 @@ namespace XBai
 				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
 				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+				//Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 
 			Renderer2D::EndScene();
@@ -94,6 +111,20 @@ namespace XBai
 				cameraComponent.Camera.SetViewportSize(width, height);
 			}
 		}
+	}
+
+	Entity Scene::GetPrimaryCameraEntity()
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto ent :view)
+		{
+			const auto& camera = view.get<CameraComponent>(ent);
+			if (camera.Primary)
+			{
+				return Entity{ent, this};
+			}
+		}
+		return {};
 	}
 
 	template <typename T>

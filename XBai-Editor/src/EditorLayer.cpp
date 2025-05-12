@@ -3,6 +3,8 @@
 #include "imgui/imgui.h"
 #include "XBai/Scene/SceneSerializer.h"
 #include "XBai/Utils/PlatformUtils.h"
+#include "ImGuizmo/ImGuizmo.h"
+#include "XBai/Math/Math.h"
 #include <Platform/OpenGL/OpenGLShader.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -10,7 +12,6 @@ namespace XBai
 {
 	EditorLayer::EditorLayer() : Layer("EditorLayer")
 		, m_CameraController(1280.0f / 720.0f, true)
-		
 	{
 
 	}
@@ -20,12 +21,15 @@ namespace XBai
 		XB_PROFILE_FUNCTION()
 
 		Renderer2D::Init();
-		FrameBufferSpecification spec;
-		spec.Width = 1280;
-		spec.Height = 720;
-		m_FrameBuffer = XBai::FrameBuffer::Create(spec);
+		FrameBufferSpecification fbSpec;
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		fbSpec.Width = 1280;
+		fbSpec.Height = 720;
+		m_FrameBuffer = XBai::FrameBuffer::Create(fbSpec);
 		m_ActiveScene = CreateRef<Scene>();
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 	}
 
 	void EditorLayer::OnDetach()
@@ -44,12 +48,14 @@ namespace XBai
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		if (m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
+		
+		m_EditorCamera.OnUpdate(ts);
 
 		Renderer2D::ResetStats();
 		
@@ -57,8 +63,28 @@ namespace XBai
 		m_FrameBuffer->Bind();
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
+
+		m_FrameBuffer->ClearAttachment(1, -1);
 		
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+		//m_ActiveScene->OnUpdateRuntime(ts);
+
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_ViewportBounds[0].x;
+		my -= m_ViewportBounds[0].y;
+		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+		my = viewportSize.y - my;
+		int mouseX = (int)mx;
+		int mouseY = (int)my;
+		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
+		{
+			int pixelData = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
+			//XB_CORE_WARN("pixelData : {0}", pixelData);
+			if (pixelData == -1 || pixelData < 0 || pixelData > 10000000)
+				m_HoveredEntity = {};
+			else
+				m_HoveredEntity = { (entt::entity)pixelData, m_ActiveScene.get() };
+		}
 
 		m_FrameBuffer->Unbind();
 	}
@@ -137,6 +163,13 @@ namespace XBai
 
 		ImGui::Begin("Status");
 
+		std::string name = "None";
+		if (m_HoveredEntity)
+		{
+			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+		}
+		ImGui::Text("Hovered Entity : %s", name.c_str());
+
 		auto stats = XBai::Renderer2D::GetStats();
 		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
@@ -148,9 +181,15 @@ namespace XBai
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
 		ImGui::Begin("ViewPort");
 
+		// auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		// auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetCursorPos();//这里的位置包含了标签栏
+		// m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		// m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		if (m_ViewportSize.x != viewportPanelSize.x || m_ViewportSize.y != viewportPanelSize.y)
@@ -160,6 +199,58 @@ namespace XBai
 		}
 
 		ImGui::Image(m_FrameBuffer->GetColorAttachmentRendererID(), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, { 0.0f, 1.0f }, { 1.0f, 0.0f });
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 minBound = ImGui::GetWindowPos();
+		minBound.x += viewportOffset.x;
+		minBound.y += viewportOffset.y;
+
+		ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+		m_ViewportBounds[0] = { minBound.x, minBound.y };
+		m_ViewportBounds[1] = { maxBound.x, maxBound.y };
+
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1)
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			float windowWidth = ImGui::GetWindowWidth();
+			float windowHeight = ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+			//ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
+
+			//Editor相机
+			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+			glm::mat4 transform = tc.GetTransform();
+
+			//是否对齐的控制键
+			bool snap = Input::IsKeyPressed(XB_KEY_LEFT_CONTROL);
+			float snapValue = 0.5f;
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+			{
+				snapValue = 45.0f;
+			}
+			float snapValues[3] = {snapValue, snapValue, snapValue};
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), 
+				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+			if (ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				glm::vec3 originalRotation = tc.Rotation;
+				glm::vec3 deltaRotation = rotation - tc.Rotation;
+
+				tc.Translation = translation;
+				tc.Rotation += deltaRotation;
+				tc.Scale = scale;
+			}
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -170,9 +261,11 @@ namespace XBai
 	{
 		// 事件
 		m_CameraController.OnEvent(e);
+		m_EditorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(XB_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(XB_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -204,14 +297,43 @@ namespace XBai
 				SaveSceneAs();
 			}
 			break;
+
+		case XB_KEY_Q:
+			m_GizmoType = -1;
+			break;
+		case XB_KEY_W:
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		case XB_KEY_E:
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		case XB_KEY_R:
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
 		}
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		if (e.GetMouseButton() == XB_MOUSE_BUTTON_LEFT)
+		{
+			if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(XB_KEY_LEFT_ALT))
+			{
+				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			}
+		}
+		return false;
 	}
 
 	void EditorLayer::NewScene()
 	{
+		m_ActiveScene.reset();
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+		m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 	}
 
 	void EditorLayer::OpenScene()
@@ -219,11 +341,14 @@ namespace XBai
 		std::string filepath = FileDialogs::OpenFile("XBai Scene (*.xbai)\0*.xbai\0");
 		if (!filepath.empty())
 		{
+			m_ActiveScene.reset();
 			m_ActiveScene = CreateRef<Scene>();
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.Deserialize(filepath);
+			m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		}
 	}
 

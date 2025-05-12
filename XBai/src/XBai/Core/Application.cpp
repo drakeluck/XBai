@@ -118,5 +118,4 @@ namespace XBai
 
 		return false;
 	}
-
 }

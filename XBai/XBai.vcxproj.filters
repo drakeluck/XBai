@@ -28,6 +28,9 @@
     <Filter Include="src\XBai\ImGui">
       <UniqueIdentifier>{2A8B0863-1659-FC68-FFEC-6C8FEB59D8CD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\XBai\Math">
+      <UniqueIdentifier>{D9BAD348-457B-4F7F-0EB6-98FC7A35945B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\XBai\Render">
       <UniqueIdentifier>{6FB49CD8-DB3F-0A9D-E450-8D91505B669D}</UniqueIdentifier>
     </Filter>
@@ -39,6 +42,9 @@
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\ImGuizmo">
+      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -141,10 +147,16 @@
     <ClInclude Include="src\XBai\ImGui\ImGuiLayer.h">
       <Filter>src\XBai\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\XBai\Math\Math.h">
+      <Filter>src\XBai\Math</Filter>
+    </ClInclude>
     <ClInclude Include="src\XBai\Render\Buffer.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
     <ClInclude Include="src\XBai\Render\Camera.h">
+      <Filter>src\XBai\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XBai\Render\EditorCamera.h">
       <Filter>src\XBai\Render</Filter>
     </ClInclude>
     <ClInclude Include="src\XBai\Render\FrameBuffer.h">
@@ -206,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="src\xbpch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1514,7 +1529,13 @@
     <ClCompile Include="src\XBai\ImGui\ImGuiLayer.cpp">
       <Filter>src\XBai\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="src\XBai\Math\Math.cpp">
+      <Filter>src\XBai\Math</Filter>
+    </ClCompile>
     <ClCompile Include="src\XBai\Render\Buffer.cpp">
+      <Filter>src\XBai\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XBai\Render\EditorCamera.cpp">
       <Filter>src\XBai\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\XBai\Render\FrameBuffer.cpp">
@@ -1564,6 +1585,9 @@
     </ClCompile>
     <ClCompile Include="src\xbpch.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>

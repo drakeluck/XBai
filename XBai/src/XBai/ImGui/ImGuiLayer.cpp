@@ -6,10 +6,9 @@
 #include "backends/imgui_impl_opengl3.h"
 
 #include "XBai/Core/Application.h"
-
+#include "ImGuizmo.h"
 //临时的
 #include "GLFW/glfw3.h"
-
 #include <filesystem>
 
 namespace XBai
@@ -76,7 +75,9 @@ namespace XBai
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
+
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGuiLayer::End()

@@ -2,7 +2,9 @@
 #define XB_SCENE_H
 
 #include "entt.hpp"
+
 #include "XBai/Core/TimeStep.h"
+#include "XBai/Render/EditorCamera.h"
 
 namespace XBai
 {
@@ -17,9 +19,11 @@ namespace XBai
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
-		void OnUpdate(TimeStep ts);
-
+		void OnUpdateEditor(TimeStep ts, EditorCamera& camera);
+		void OnUpdateRuntime(TimeStep ts);
 		void OnViewportResize(uint32_t width, uint32_t height);
+
+		Entity GetPrimaryCameraEntity();
 
 	private:
 		template<typename T>

@@ -59,19 +59,65 @@ namespace XBai
 		XB_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!")
 		glBindVertexArray(m_RendererID);
 		vertexBuffer->Bind();
-		uint32_t index = 0;
 		
 		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout)
 		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, //layout(position = ${index})
-				element.GetComponentCount(), //该组数据的数据单元个数
-				ShaderDataTypeToOpenGLBaseType(element.Type),//该组数据的数据单元的类型
-				element.Normalized ? GL_TRUE : GL_FALSE, //数据是否要归一化
-				layout.GetStride(),	 //该顶点数据的步长
-				(const void*)element.Offset);//该组数据在顶点数据中的起始偏移量
-			index++;
+			switch(element.Type)
+			{
+				case ShaderDataType::Float:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				{
+					glEnableVertexAttribArray(m_VertexBufferIndex);
+					glVertexAttribPointer(m_VertexBufferIndex, //layout(position = ${m_VertexBufferIndex})
+						element.GetComponentCount(), //该组数据的数据单元个数
+						ShaderDataTypeToOpenGLBaseType(element.Type),//该组数据的数据单元的类型
+						element.Normalized ? GL_TRUE : GL_FALSE, //数据是否要归一化
+						layout.GetStride(),	 //该顶点数据的步长
+						(const void*)element.Offset);//该组数据在顶点数据中的起始偏移量
+					m_VertexBufferIndex++;
+					break;
+				}
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool:
+				{
+					glEnableVertexAttribArray(m_VertexBufferIndex);
+					glVertexAttribIPointer(m_VertexBufferIndex, //layout(position = ${m_VertexBufferIndex})
+						element.GetComponentCount(), //该组数据的数据单元个数
+						ShaderDataTypeToOpenGLBaseType(element.Type),//该组数据的数据单元的类型
+						layout.GetStride(),	 //该顶点数据的步长
+						(const void*)element.Offset);//该组数据在顶点数据中的起始偏移量
+					m_VertexBufferIndex++;
+					break;
+				}
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4:
+				{
+					uint8_t count = element.GetComponentCount();
+					for(uint8_t i = 0; i < count; i++)
+					{
+						glEnableVertexAttribArray(m_VertexBufferIndex);
+						glVertexAttribPointer(m_VertexBufferIndex, 
+							count,
+							ShaderDataTypeToOpenGLBaseType(element.Type),
+							element.Normalized ? GL_TRUE : GL_FALSE,
+							layout.GetStride(),
+							(const void*)(element.Offset + sizeof(float) * count * i));
+						glVertexAttribDivisor(m_VertexBufferIndex, 1);
+						m_VertexBufferIndex++;
+					}
+					break;
+				}
+			default:
+				XB_CORE_ASSERT(false, "Unknow ShaderDataType!")
+				break;
+
+			}
 		}
 		m_VertexBuffers.push_back(vertexBuffer);
 	}

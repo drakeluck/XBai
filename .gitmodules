@@ -13,3 +13,6 @@
 [submodule "XBai/vendor/yaml-cpp"]
 	path = XBai/vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "XBai/vendor/ImGuizmo"]
+	path = XBai/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo
