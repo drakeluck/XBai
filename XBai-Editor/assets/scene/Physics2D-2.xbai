@@ -1,0 +1,56 @@
+Scene: Untitled
+Entities:
+  - Entity: 3337997641781653136
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 9.1]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 100
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 9
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 12822317641666931712
+    TagComponent:
+      Tag: square
+    TransformComponent:
+      Translation: [-0.17411816, 2.0840251, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.47999996, 0.47999996, 0.48000002]
+    SpriteRendererComponent:
+      Color: [1, 0.57254905, 1, 1]
+    Rigibody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 0.59
+      Friction: 0.41
+      Restitution: 0.53
+  - Entity: 5774146902314736275
+    TagComponent:
+      Tag: Earth
+    TransformComponent:
+      Translation: [0.18702304, -1.8141528, 0]
+      Rotation: [0, 0, 0]
+      Scale: [6.590658, 0.3947525, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+    Rigibody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 0.86
+      Friction: 0.5
+      Restitution: 0

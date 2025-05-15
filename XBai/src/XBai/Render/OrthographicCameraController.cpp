@@ -13,6 +13,11 @@ namespace XBai
 	{
 	}
 
+	OrthographicCameraController::~OrthographicCameraController()
+	{
+		
+	}
+
 	void OrthographicCameraController::OnUpdate(TimeStep ts)
 	{
 		XB_PROFILE_FUNCTION()

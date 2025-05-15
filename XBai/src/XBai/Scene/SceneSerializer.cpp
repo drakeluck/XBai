@@ -7,10 +7,32 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include <glm/glm.hpp>
-//#include "glm/gtc/type_ptr.hpp"
 
 namespace YAML
 {
+	template<>
+	struct convert<glm::vec2>
+	{
+		static Node encode(const glm::vec2& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+			{
+				return false;
+			}
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+
 	template<>
 	struct convert<glm::vec3>
 	{
@@ -66,6 +88,13 @@ namespace YAML
 
 namespace XBai
 {
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+	{
+		out << YAML::Flow;
+		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+		return out;
+	}
+
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
 	{
 		out << YAML::Flow;
@@ -80,6 +109,31 @@ namespace XBai
 		return out;
 	}
 
+	static std::string RigidBody2DBodyTypeToString(Rigibody2DComponent::BodyType bodyType)
+	{
+		switch(bodyType)
+		{
+			case Rigibody2DComponent::BodyType::Static:		return "Static";
+			case Rigibody2DComponent::BodyType::Kinematic:	return "Kinematic";
+			case Rigibody2DComponent::BodyType::Dynamic:	return "Dynamic";
+		}
+		XB_CORE_ASSERT(false, "Unknow rigidbody type!")
+		return {};
+	}
+
+	static Rigibody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string str)
+	{
+		if (str == "Static")
+			return Rigibody2DComponent::BodyType::Static;
+		else if (str == "Kinematic")
+			return Rigibody2DComponent::BodyType::Kinematic;
+		else if (str == "Dynamic")
+			return Rigibody2DComponent::BodyType::Dynamic;
+
+		XB_CORE_ASSERT(false, "Unknow rigidbody type!")
+		return Rigibody2DComponent::BodyType::Static;
+	}
+
 	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 		:m_Scene(scene)
 	{
@@ -88,7 +142,7 @@ namespace XBai
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;//Entity
-		out << YAML::Key << "Entity" << YAML::Value << "63121563";//Entity 唯一ID
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();//Entity 唯一ID
 		
 
 		if (entity.HasComponent<TagComponent>())
@@ -144,6 +198,33 @@ namespace XBai
 			auto& spriteRenderComponent = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteRenderComponent.Color;
 			out << YAML::EndMap;//SpriteRendererComponent
+		}
+
+		if (entity.HasComponent<Rigibody2DComponent>())
+		{
+			out << YAML::Key << "Rigibody2DComponent";
+			out << YAML::BeginMap;//Rigibody2DComponent
+
+			auto& rb2dComponent = entity.GetComponent<Rigibody2DComponent>();
+			out << YAML::Key << "BodyType" << YAML::Value << RigidBody2DBodyTypeToString(rb2dComponent.Type);
+			out << YAML::Key << "FixedRotation" << YAML::Value << rb2dComponent.FixedRotation;
+			
+			out << YAML::EndMap;//Rigibody2DComponent
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap;//BoxCollider2DComponent
+
+			auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
+			out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
+			out << YAML::Key << "Density" << YAML::Value << bc2dComponent.Density;
+			out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
+
+			out << YAML::EndMap;//BoxCollider2DComponent
 		}
 
 		out << YAML::EndMap;//Entity
@@ -203,7 +284,7 @@ namespace XBai
 
 				XB_CORE_TRACE("  解析实体：ID = {0}, name = {1}", uuid, name);
 
-				Entity deserializedEntity = m_Scene->CreateEntity(name);
+				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 				if (auto transformComponent = entity["TransformComponent"])
 				{
@@ -226,6 +307,7 @@ namespace XBai
 					cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
 					cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
 					cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+					cc.Camera.RecalculateProjection();
 
 					cc.Primary = cameraComponent["Primary"].as<bool>();
 					cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
@@ -235,6 +317,23 @@ namespace XBai
 				{
 					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 					src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+				}
+
+				if (auto rigibody2dComponent = entity["Rigibody2DComponent"])
+				{
+					auto& rb2d = deserializedEntity.AddComponent<Rigibody2DComponent>();
+					rb2d.Type = RigidBody2DBodyTypeFromString(rigibody2dComponent["BodyType"].as<std::string>());
+					rb2d.FixedRotation = rigibody2dComponent["FixedRotation"].as<bool>();
+				}
+
+				if (auto bc2dComponent = entity["BoxCollider2DComponent"])
+				{
+					auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
+					bc2d.Offset = bc2dComponent["Offset"].as<glm::vec2>();
+					bc2d.Size = bc2dComponent["Size"].as<glm::vec2>();
+					bc2d.Density = bc2dComponent["Density"].as<float>();
+					bc2d.Friction = bc2dComponent["Friction"].as<float>();
+					bc2d.Restitution = bc2dComponent["Restitution"].as<float>();
 				}
 			}
 		}

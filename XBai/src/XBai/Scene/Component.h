@@ -1,17 +1,25 @@
 ﻿#ifndef XB_SCENE_COMPONENT_H
 #define XB_SCENE_COMPONENT_H
 
+#include "SceneCamera.h"
+#include "XBai/Core/UUID.h"
+#include "XBai/Render/Texture.h"
+#include "../vendor/Box2D/include/box2d/box2d.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "SceneCamera.h"
-#include "ScriptableEntity.h"
-
 namespace XBai
 {
+	struct IDComponent
+	{
+		UUID ID;
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+	};
+
 	struct TagComponent
 	{
 		std::string Tag;
@@ -47,6 +55,8 @@ namespace XBai
 	struct SpriteRendererComponent
 	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f};
+		Ref<Texture2D> Texture;
+		float TilingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
@@ -66,6 +76,7 @@ namespace XBai
 		CameraComponent(const CameraComponent&) = default;
 	};
 
+	class ScriptableEntity;
 	struct NativeScriptComponent
 	{
 		ScriptableEntity* Instance = nullptr;
@@ -79,6 +90,41 @@ namespace XBai
 			InstantiateScript = [](ScriptableEntity*& instance) { instance = new T(); };
 			DestroyScript = [](ScriptableEntity*& instance) { delete static_cast<T*>(instance); instance = nullptr; };
 		}
+	};
+
+	//刚体组件
+	struct Rigibody2DComponent
+	{
+		//静态，运动体, 动态
+		enum class BodyType { Static = 0, Kinematic, Dynamic };
+	
+		BodyType Type = BodyType::Static;
+		//是否锁定旋转
+		bool FixedRotation = false;
+	
+		b2BodyId RuntimeBody;
+
+		Rigibody2DComponent() = default;
+		Rigibody2DComponent(const Rigibody2DComponent&) = default;
+	};
+
+	//碰撞盒组件
+	struct BoxCollider2DComponent
+	{
+		glm::vec2 Offset = { 0.0f, 0.0f };
+		glm::vec2 Size = { 0.5f, 0.5f };
+
+		//密度
+		float Density = 1.0f;
+		//摩擦力
+		float Friction = 0.5f;
+		//弹性
+		float Restitution = 0.0f;
+		//弹性阈值
+		//float RestitutionThreshold = 0.5f;
+
+		BoxCollider2DComponent() = default;
+		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 	};
 
 }

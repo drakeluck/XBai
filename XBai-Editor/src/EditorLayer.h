@@ -3,6 +3,7 @@
 
 #include "XBai.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "XBai/Render/EditorCamera.h"
 
 namespace XBai
@@ -12,7 +13,7 @@ namespace XBai
 
 	public:
 		EditorLayer();
-		virtual ~EditorLayer() override = default;
+		virtual ~EditorLayer() override;
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 
@@ -24,17 +25,32 @@ namespace XBai
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
+		void SaveScene();
 		void SaveSceneAs();
-	private:
-		OrthographicCameraController m_CameraController;
-		Ref<Shader> m_FlatShader;			// shader类 指针
-		Ref<VertexArray> m_FlatVertexArray;
-		Ref<Texture2D> m_CheckerboardTexture;
 
-		Ref<Texture2D> m_SpriteSheet;
+		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
+
+		void OnScenePlay();
+		void OnSceneStop();
+		void OnScenePause();
+
+		void OnDuplicateEntity();
+
+		void UI_Toolbar();
+	private:
+		//OrthographicCameraController m_CameraController;
+
 		Ref<FrameBuffer> m_FrameBuffer;
 
-		Ref<Scene> m_ActiveScene;
+		Ref<Scene> m_ActiveScene;//当前活动场景
+
+		Ref<Scene> m_EditorScene;//编辑时场景
+
+		Ref<Texture2D> m_IconPlay;
+		Ref<Texture2D> m_IconStop;
+
+		std::filesystem::path m_EditorScenePath;
 
 		Entity m_HoveredEntity;
 
@@ -46,12 +62,18 @@ namespace XBai
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 
-		std::unordered_map<char, Ref<SubTexture2D>> s_TextureMap;
+		enum class SceneState
+		{
+			Edit = 0, Play = 1, Pause = 2
+		};
+
+		SceneState m_SceneState = SceneState::Edit;
 
 		int m_GizmoType = -1;
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 	};
 }
 

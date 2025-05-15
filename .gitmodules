@@ -16,3 +16,6 @@
 [submodule "XBai/vendor/ImGuizmo"]
 	path = XBai/vendor/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "XBai/vendor/box2d"]
+	path = XBai/vendor/box2d
+	url = https://github.com/erincatto/box2d

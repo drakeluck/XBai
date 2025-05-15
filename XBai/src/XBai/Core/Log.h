@@ -1,12 +1,11 @@
-﻿#ifndef XBAI_LOG_H
-#define XBAI_LOG_H
+﻿#ifndef XBAI_CORE_LOG_H
+#define XBAI_CORE_LOG_H
 #pragma warning( disable: 4251 )//忽略掉“需要有 dll 接口以供“XBai::Log”的客户端使用”warning
 
-#include "xbpch.h"
 #include "Core.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 namespace XBai
 {
 	class XB_API Log

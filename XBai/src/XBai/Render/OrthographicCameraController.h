@@ -24,7 +24,7 @@ namespace XBai
 	public:
 		//@param aspectRatio 纵横比
 		OrthographicCameraController(float aspectRatio, bool rotation = false);
-
+		~OrthographicCameraController();
 		void OnUpdate(TimeStep ts);
 		void OnEvent(Event& e);
 

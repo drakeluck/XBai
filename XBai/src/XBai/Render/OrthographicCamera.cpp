@@ -12,6 +12,11 @@ namespace XBai
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
+	OrthographicCamera::~OrthographicCamera()
+	{
+
+	}
+
 	void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
 	{
 		XB_PROFILE_FUNCTION()

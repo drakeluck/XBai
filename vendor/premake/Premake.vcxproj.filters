@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{61705900-4DFC-870B-B6AA-880BA255880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\SandBox">
+      <UniqueIdentifier>{1FF36A1D-0BAB-AC6A-74B2-85C66089475B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai">
+      <UniqueIdentifier>{B4BB8747-209B-06E3-29B3-91B995116D44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai\vendor">
+      <UniqueIdentifier>{919F041B-7D6D-F820-6601-6947526ED485}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai\vendor\Box2D">
+      <UniqueIdentifier>{5FF207C6-4B81-918F-F49F-A58AE00DA235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai\vendor\GLFW">
+      <UniqueIdentifier>{70BD76D7-DC1E-54E5-658C-9A97D1EC8AA4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai\vendor\Glad">
+      <UniqueIdentifier>{184977D7-84AA-54E5-0D18-9B9779788BA4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai\vendor\imgui">
+      <UniqueIdentifier>{BB55C8C8-A7E4-5192-5003-668D3C716238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai\vendor\yaml-cpp">
+      <UniqueIdentifier>{63196AD8-CF50-B26F-D85A-16934411D968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\XBai-Editor">
+      <UniqueIdentifier>{E8CCAE0E-D49A-A214-BD2E-133BA99B7E79}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\SandBox\premake5.lua">
+      <Filter>..\SandBox</Filter>
+    </None>
+    <None Include="..\..\XBai-Editor\premake5.lua">
+      <Filter>..\XBai-Editor</Filter>
+    </None>
+    <None Include="..\..\XBai\premake5.lua">
+      <Filter>..\XBai</Filter>
+    </None>
+    <None Include="..\..\XBai\vendor\Box2D\premake5.lua">
+      <Filter>..\XBai\vendor\Box2D</Filter>
+    </None>
+    <None Include="..\..\XBai\vendor\GLFW\premake5.lua">
+      <Filter>..\XBai\vendor\GLFW</Filter>
+    </None>
+    <None Include="..\..\XBai\vendor\Glad\premake5.lua">
+      <Filter>..\XBai\vendor\Glad</Filter>
+    </None>
+    <None Include="..\..\XBai\vendor\imgui\premake5.lua">
+      <Filter>..\XBai\vendor\imgui</Filter>
+    </None>
+    <None Include="..\..\XBai\vendor\yaml-cpp\premake5.lua">
+      <Filter>..\XBai\vendor\yaml-cpp</Filter>
+    </None>
+    <None Include="..\..\premake5.lua">
+      <Filter>..</Filter>
+    </None>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+</Project>
