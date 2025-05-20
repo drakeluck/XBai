@@ -190,6 +190,18 @@ namespace XBai
 			out << YAML::EndMap;//CameraComponent
 		}
 
+		if (entity.HasComponent<CircleRendererComponent>())
+		{
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap;//CircleRendererComponent
+
+			auto& circleRenderComponent = entity.GetComponent<CircleRendererComponent>();
+			out << YAML::Key << "Color" << YAML::Value << circleRenderComponent.Color;
+			out << YAML::Key << "Thickness" << YAML::Value << circleRenderComponent.Thickness;
+			out << YAML::Key << "Fade" << YAML::Value << circleRenderComponent.Fade;
+			out << YAML::EndMap;//CircleRendererComponent
+		}
+
 		if (entity.HasComponent<SpriteRendererComponent>())
 		{
 			out << YAML::Key << "SpriteRendererComponent";
@@ -225,6 +237,21 @@ namespace XBai
 			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
 
 			out << YAML::EndMap;//BoxCollider2DComponent
+		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>())
+		{
+			out << YAML::Key << "CircleCollider2DComponent";
+			out << YAML::BeginMap;//CircleCollider2DComponent
+
+			auto& cc2dComponent = entity.GetComponent<CircleCollider2DComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << cc2dComponent.Offset;
+			out << YAML::Key << "Radius" << YAML::Value << cc2dComponent.Radius;
+			out << YAML::Key << "Density" << YAML::Value << cc2dComponent.Density;
+			out << YAML::Key << "Friction" << YAML::Value << cc2dComponent.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << cc2dComponent.Restitution;
+
+			out << YAML::EndMap;//CircleCollider2DComponent
 		}
 
 		out << YAML::EndMap;//Entity
@@ -313,6 +340,14 @@ namespace XBai
 					cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 				}
 
+				if (auto circleRendererComponent = entity["CircleRendererComponent"])
+				{
+					auto& src = deserializedEntity.AddComponent<CircleRendererComponent>();
+					src.Color = circleRendererComponent["Color"].as<glm::vec4>();
+					src.Thickness = circleRendererComponent["Thickness"].as<float>();
+					src.Fade = circleRendererComponent["Fade"].as<float>();
+				}
+
 				if (auto spriteRendererComponent = entity["SpriteRendererComponent"])
 				{
 					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
@@ -334,6 +369,16 @@ namespace XBai
 					bc2d.Density = bc2dComponent["Density"].as<float>();
 					bc2d.Friction = bc2dComponent["Friction"].as<float>();
 					bc2d.Restitution = bc2dComponent["Restitution"].as<float>();
+				}
+
+				if (auto cc2dComponent = entity["CircleCollider2DComponent"])
+				{
+					auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>();
+					cc2d.Offset = cc2dComponent["Offset"].as<glm::vec2>();
+					cc2d.Radius = cc2dComponent["Radius"].as<float>();
+					cc2d.Density = cc2dComponent["Density"].as<float>();
+					cc2d.Friction = cc2dComponent["Friction"].as<float>();
+					cc2d.Restitution = cc2dComponent["Restitution"].as<float>();
 				}
 			}
 		}

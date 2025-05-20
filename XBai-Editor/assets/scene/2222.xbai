@@ -1,0 +1,130 @@
+Scene: Untitled
+Entities:
+  - Entity: 1903710059895956506
+    TagComponent:
+      Tag: Circle1
+    TransformComponent:
+      Translation: [-0.79128176, 1.5112984, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CircleRendererComponent:
+      Color: [1, 0.3529412, 0, 1]
+      Thickness: 1
+      Fade: 0.037
+    Rigibody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 0.55
+      Friction: 0.34
+      Restitution: 0.51
+  - Entity: 9877992932571759660
+    TagComponent:
+      Tag: Land2
+    TransformComponent:
+      Translation: [2.2241864, -2.9517279, 0]
+      Rotation: [0, 0, 0.758617]
+      Scale: [8.984066, 0.6574511, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 0.47843137, 1]
+    Rigibody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.34
+  - Entity: 13275498794335536599
+    TagComponent:
+      Tag: square3
+    TransformComponent:
+      Translation: [0.98745036, 5.364212, 0]
+      Rotation: [0, 0, 0.106493264]
+      Scale: [1.0600001, 1.0600001, 1.06]
+    SpriteRendererComponent:
+      Color: [1, 0.36078432, 1, 1]
+    Rigibody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 0.6
+      Friction: 0.14
+      Restitution: 0.53
+  - Entity: 5524516318000401869
+    TagComponent:
+      Tag: Land
+    TransformComponent:
+      Translation: [-3.606647, -3.2177544, 0]
+      Rotation: [0, 0, -0.72559136]
+      Scale: [7.9710174, 0.47341126, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+    Rigibody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.16
+  - Entity: 7800942497498492701
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-0.18024576, 0.07943159, 16]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 100
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 14772249633831156145
+    TagComponent:
+      Tag: square2
+    TransformComponent:
+      Translation: [2.7328994, 5.7904053, 0]
+      Rotation: [0, 0, 0.106493264]
+      Scale: [1.0600001, 1.0600001, 1.06]
+    SpriteRendererComponent:
+      Color: [1, 0.36078432, 1, 1]
+    Rigibody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 0.6
+      Friction: 0.14
+      Restitution: 0.53
+  - Entity: 16403369529961003813
+    TagComponent:
+      Tag: square1
+    TransformComponent:
+      Translation: [-1.7525017, 6.033966, 0]
+      Rotation: [0, 0, 0.106493264]
+      Scale: [1.0600001, 1.0600001, 1.06]
+    SpriteRendererComponent:
+      Color: [1, 0.36078432, 1, 1]
+    Rigibody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 0.6
+      Friction: 0.14
+      Restitution: 0.53

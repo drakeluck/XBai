@@ -29,6 +29,7 @@ namespace XBai
 		Renderer2D::Init();
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
+		m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
 		m_IconStop = Texture2D::Create("Resources/Icons/StopButton.png");
 
 		FrameBufferSpecification fbSpec;
@@ -36,12 +37,19 @@ namespace XBai
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_FrameBuffer = XBai::FrameBuffer::Create(fbSpec);
-		m_ActiveScene = CreateRef<Scene>();
-		//m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_EditorScene = CreateRef<Scene>();
+		m_ActiveScene = m_EditorScene;
+
+		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+		if (commandLineArgs.Count > 1)
+		{
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Deserialize(sceneFilePath);
+		}
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
-		//m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-		m_EditorScene = m_ActiveScene;
+		
 	}
 
 	void EditorLayer::OnDetach()
@@ -59,8 +67,6 @@ namespace XBai
 			&& (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-
-			//m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 
@@ -81,15 +87,18 @@ namespace XBai
 		switch(m_SceneState)
 		{
 		case SceneState::Edit:
-			// if (m_ViewportFocused)
-			// 	m_CameraController.OnUpdate(ts);
+			m_EditorCamera.OnUpdate(ts);
 			m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 			break;
 		case SceneState::Play:
 			m_ActiveScene->OnUpdateRuntime(ts);
 			break;
+		case SceneState::Simulate:
+			m_EditorCamera.OnUpdate(ts);
+			m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+			break;
 		}
-
+		
 		auto [mx, my] = ImGui::GetMousePos();
 		mx -= m_ViewportBounds[0].x;
 		my -= m_ViewportBounds[0].y;
@@ -105,7 +114,7 @@ namespace XBai
 			else
 				m_HoveredEntity = { (entt::entity)pixelData, m_ActiveScene.get() };
 		}
-
+		OnOverlayRender();
 		m_FrameBuffer->Unbind();
 	}
 
@@ -197,6 +206,11 @@ namespace XBai
 		ImGui::Text("Quad Count: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+		ImGui::End();
+
+		ImGui::Begin("设置");
+		ImGui::Checkbox("是否显示碰撞体框", &m_ShowPhysicsColliders);
+
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -298,14 +312,29 @@ namespace XBai
 		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		float size = ImGui::GetWindowHeight() - 4.0f;
 
-		Ref<Texture2D> icon = m_SceneState == SceneState::Play ?  m_IconStop : m_IconPlay;
-		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f - (size * 0.5f));
-		if (ImGui::ImageButton("SceneState", icon->GetRendererID(), ImVec2(size, size), {0, 1}, {1, 0}))
+		bool toolbarEnabled = (bool)m_ActiveScene;
 		{
-			if (m_SceneState == SceneState::Edit)
-				OnScenePlay();
-			else if (m_SceneState == SceneState::Play)
-				OnSceneStop();
+			Ref<Texture2D> icon = m_SceneState == SceneState::Play ?  m_IconStop : m_IconPlay;
+			ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.3f - (size * 0.5f));
+			if (ImGui::ImageButton("SceneState", icon->GetRendererID(), ImVec2(size, size), {0, 1}, {1, 0}) && toolbarEnabled)
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
+					OnScenePlay();
+				else if (m_SceneState == SceneState::Play)
+					OnSceneStop();
+			}
+		}
+		ImGui::SameLine();
+		{
+			Ref<Texture2D> icon = m_SceneState == SceneState::Simulate ? m_IconStop : m_IconSimulate;
+			//ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.6f - (size * 0.5f));
+			if (ImGui::ImageButton("SceneSimulationState", icon->GetRendererID(), ImVec2(size, size), { 0, 1 }, { 1, 0 }) && toolbarEnabled)
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+					OnSceneSimulate();
+				else if (m_SceneState == SceneState::Simulate)
+					OnSceneStop();
+			}
 		}
 
 		ImGui::PopStyleVar(2);
@@ -385,6 +414,61 @@ namespace XBai
 		return false;
 	}
 
+	void EditorLayer::OnOverlayRender()
+	{
+		if (m_SceneState == SceneState::Play)
+		{
+			Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+			if (!camera)
+				return;
+			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
+		}
+		else if (m_SceneState == SceneState::Edit)
+		{
+			Renderer2D::BeginScene(m_EditorCamera);
+		}
+
+		if (m_ShowPhysicsColliders)
+		{
+			{//矩形碰撞体框
+				auto view = m_ActiveScene->GetAllEntitysWith<TransformComponent, BoxCollider2DComponent>();
+				for (auto entity : view)
+				{
+					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+					glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
+					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+						* rotation
+						* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, 0.001f))
+						* glm::scale(glm::mat4(1.0f), scale);
+					Renderer2D::DrawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+			}
+
+			{//圆形碰撞体框
+				auto view = m_ActiveScene->GetAllEntitysWith<TransformComponent, CircleCollider2DComponent>();
+				for (auto entity : view)
+				{
+					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+					glm::vec3 translate = tc.Translation + glm::vec3(cc2d.Offset, 0.001f);
+
+					glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
+
+					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+						* rotation
+						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, 0.001f))
+						* glm::scale(glm::mat4(1.0f), scale);
+					Renderer2D::DrawCircle(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.01f);
+				}
+			}
+		}
+
+		Renderer2D::EndScene();
+	}
+
 	void EditorLayer::NewScene()
 	{
 		m_EditorScene = CreateRef<Scene>();
@@ -453,6 +537,10 @@ namespace XBai
 
 	void EditorLayer::OnScenePlay()
 	{
+		if (m_SceneState == SceneState::Simulate)
+		{
+			OnSceneStop();
+		}
 		m_SceneState = SceneState::Play;
 
 		m_ActiveScene = Scene::Copy(m_EditorScene);
@@ -463,16 +551,36 @@ namespace XBai
 
 	void EditorLayer::OnSceneStop()
 	{
+		if (m_SceneState == SceneState::Play)
+		{
+			m_ActiveScene->OnRuntimeStop();
+		}
+		else if (m_SceneState == SceneState::Simulate)
+		{
+			m_ActiveScene->OnSimulationStop();
+		}
 		m_SceneState = SceneState::Edit;
-		m_ActiveScene->OnRuntimeStop();
 		m_ActiveScene = m_EditorScene;
-
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnScenePause()
 	{
 		m_SceneState = SceneState::Pause;
+	}
+
+	void EditorLayer::OnSceneSimulate()
+	{
+		if (m_SceneState == SceneState::Play)
+		{
+			OnSceneStop();
+		}
+		m_SceneState = SceneState::Simulate;
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnSimulationStart();
+
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnDuplicateEntity()

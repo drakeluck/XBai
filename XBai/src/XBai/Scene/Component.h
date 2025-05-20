@@ -52,9 +52,19 @@ namespace XBai
 		}
 	};
 
-	struct SpriteRendererComponent
+	struct CircleRendererComponent
 	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f};
+		float Thickness = 1.0f;//厚度
+		float Fade = 0.005f;//淡入效果
+
+		CircleRendererComponent() = default;
+		CircleRendererComponent(const CircleRendererComponent&) = default;
+	};
+
+	struct SpriteRendererComponent
+	{
+		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
 		float TilingFactor = 1.0f;
 
@@ -108,7 +118,7 @@ namespace XBai
 		Rigibody2DComponent(const Rigibody2DComponent&) = default;
 	};
 
-	//碰撞盒组件
+	//矩形碰撞盒组件
 	struct BoxCollider2DComponent
 	{
 		glm::vec2 Offset = { 0.0f, 0.0f };
@@ -125,6 +135,24 @@ namespace XBai
 
 		BoxCollider2DComponent() = default;
 		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
+	};
+
+	//圆形碰撞盒组件
+	struct CircleCollider2DComponent
+	{
+		glm::vec2 Offset = { 0.0f, 0.0f };
+		float Radius = 0.5f;
+
+		//密度
+		float Density = 1.0f;
+		//摩擦力
+		float Friction = 0.5f;
+		//弹性
+		float Restitution = 0.0f;
+
+
+		CircleCollider2DComponent() = default;
+		CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
 	};
 
 }

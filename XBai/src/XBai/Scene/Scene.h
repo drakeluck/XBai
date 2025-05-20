@@ -27,14 +27,31 @@ namespace XBai
 		void OnRuntimeStart();
 		void OnRuntimeStop();
 
+		void OnSimulationStart();
+		void OnSimulationStop();
+
 		void OnUpdateEditor(TimeStep ts, EditorCamera& camera);
 		void OnUpdateRuntime(TimeStep ts);
+		void OnUpdateSimulation(TimeStep ts, EditorCamera& camera);
+
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		//重复实体
 		void DuplicateEntity(Entity entity);
 
 		Entity GetPrimaryCameraEntity();
+
+		template<typename... Components>
+		auto GetAllEntitysWith()
+		{
+			return m_Registry.view<Components...>();
+		}
+
+	private:
+		void OnPhysics2DStart();
+		void OnPhysics2DStop();
+
+		void RenderScene(EditorCamera& camera);
 
 	private:
 		uint32_t m_ViewportWidth = 0;

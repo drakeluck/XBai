@@ -132,7 +132,8 @@ private:
 class SandBox :public XBai::Application
 {
 public:
-	SandBox()
+	SandBox(const XBai::ApplicationSpecification& specification)
+		: XBai::Application(specification)
 	{
 		//PushLayer(new ExampleLayer());
 		PushLayer(new Sandbox2D());
@@ -144,7 +145,11 @@ public:
 	}
 };
 
-XBai::Application* XBai::CreateApplication()
+XBai::Application* XBai::CreateApplication(XBai::ApplicationCommandLineArgs args)
 {
-	return new SandBox();
+	XBai::ApplicationSpecification spec;
+	spec.Name = "Sandbox";
+	spec.WorkingDirectory = "../XBai-Editor";
+	spec.CommandLineArgs = args;
+	return new SandBox(spec);
 }

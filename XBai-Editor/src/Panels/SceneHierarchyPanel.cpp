@@ -39,7 +39,7 @@ namespace XBai
 			{
 				m_SelectionContext = {};
 			}
-			if (ImGui::BeginPopupContextWindow("创建实体", 1))
+			if (!m_SelectionContext && ImGui::BeginPopupContextWindow())
 			{
 				if (ImGui::MenuItem("创建一个空实体"))
 					m_Context->CreateEntity("Empty Entity");
@@ -77,9 +77,8 @@ namespace XBai
 
 		}
 		bool isDeleted = false;
-		if (ImGui::BeginPopupContextItem("右键菜单"))
+		if (ImGui::BeginPopupContextItem())
 		{
-			ImGui::Text("This a popup for");
 			if (ImGui::Button("删除该实体"))
 				isDeleted = true;
 			
@@ -266,6 +265,15 @@ namespace XBai
 				}
 			}
 
+			if (!m_SelectionContext.HasComponent<CircleRendererComponent>())
+			{
+				if (ImGui::MenuItem("Circle Render"))
+				{
+					m_SelectionContext.AddComponent<CircleRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			if (!m_SelectionContext.HasComponent<Rigibody2DComponent>())
 			{
 				if (ImGui::MenuItem("Rigidbody 2D"))
@@ -280,6 +288,15 @@ namespace XBai
 				if (ImGui::MenuItem("BoxCollider 2D"))
 				{
 					m_SelectionContext.AddComponent<BoxCollider2DComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!m_SelectionContext.HasComponent<CircleCollider2DComponent>())
+			{
+				if (ImGui::MenuItem("CircleCollider 2D"))
+				{
+					m_SelectionContext.AddComponent<CircleCollider2DComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -372,6 +389,15 @@ namespace XBai
 				ImGui::DragFloat("TilingFactor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 			});
 
+		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
+			{
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				//ImGui::DragFloat("半径", &component.Radius, 0.025f, 0.0f, 1.0f);
+				ImGui::DragFloat("厚度", &component.Thickness, 0.025f, 0.0f, 1.0f);
+				ImGui::DragFloat("淡入效果", &component.Fade, 0.00025f, 0.0f, 1.0f);
+
+			});
+
 		DrawComponent<Rigibody2DComponent>("Rigidbody 2D", entity, [](auto& component)
 			{
 				const char* bodyTypeStrings[] = { "Static", "Kinematic", "Dynamic" };
@@ -398,8 +424,17 @@ namespace XBai
 
 		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component)
 			{
-				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
-				ImGui::DragFloat2("SIze", glm::value_ptr(component.Size), 0.1f, 0.01f, 10.0f);
+				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset), 0.05f);
+				ImGui::DragFloat2("SIze", glm::value_ptr(component.Size), 0.01f, 0.01f, 10.0f);
+				ImGui::DragFloat("密度", &component.Density, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("摩擦力", &component.Friction, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("弹性", &component.Restitution, 0.01f, 0.0f, 1.0f);
+			});
+
+		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component)
+			{
+				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset), 0.05f);
+				ImGui::DragFloat("Radius", &component.Radius, 0.01f, 0.01f, 10.0f);
 				ImGui::DragFloat("密度", &component.Density, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("摩擦力", &component.Friction, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("弹性", &component.Restitution, 0.01f, 0.0f, 1.0f);

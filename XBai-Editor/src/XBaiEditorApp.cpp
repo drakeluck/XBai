@@ -16,7 +16,8 @@ namespace XBai
 	class XBaiEditor :public Application
 	{
 	public:
-		XBaiEditor() : Application("XBai Editor")
+		XBaiEditor(const ApplicationSpecification& specification)
+			: Application(specification)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -27,8 +28,11 @@ namespace XBai
 		}
 	};
 
-	Application* CreateApplication()
+	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		return new XBaiEditor();
+		ApplicationSpecification spec;
+		spec.Name = "XBai-Editor";
+		spec.CommandLineArgs = args;
+		return new XBaiEditor(spec);
 	}
 }

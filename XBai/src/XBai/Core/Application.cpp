@@ -9,12 +9,13 @@ namespace XBai
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const std::string& name)
+	Application::Application(const ApplicationSpecification& specification)
+		:m_Specification()
 	{
 		XB_PROFILE_FUNCTION()
 		XB_CORE_ASSERT(!s_Instance, "Application is already exist!")
 		s_Instance = this;
-		m_Window = Window::Create(WindowProps(name));
+		m_Window = Window::Create(WindowProps(specification.Name));
 		m_Window->SetEventCallback(XB_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();
