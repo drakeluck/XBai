@@ -2,5 +2,7 @@
 XBai, A Simple Game Engine
 
 build
--����Ŀʹ��premake������premake�����ڡ�vendor/premake���У�
--����Ŀ��¡�����غ󣨰�����ģ�飩�����С�scripts/win-GenProjects.bat�����ɹ�������winx64ƽ̨��Visual Studio 2022��Ŀ�����蹹��������IDE��Ŀ���޸ĸ�bat�ļ�����δ�������޷���֤�ܷ񹹽�����
+
+1.本项目使用premake构建，premake程序在“vendor/premake”中；
+~~2.将项目克隆到本地后（包括子模块），运行“scripts/win-GenProjects.bat”即可构建基于winx64平台的Visual Studio 2022项目（若需构建成其他IDE项目可修改该bat文件，但未经测试无法保证能否构建）。~~
+2.从release中下载压缩包，解压后运行“scripts/win-GenProjects.bat”即可构建基于winx64平台的Visual Studio 2022项目（若需构建成其他IDE项目可修改该bat文件，但未经测试无法保证能否构建）。
